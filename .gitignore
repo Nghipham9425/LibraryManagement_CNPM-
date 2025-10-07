@@ -1,0 +1,27 @@
+# .NET Core
+LibraryManagement.API/bin/
+LibraryManagement.API/obj/
+*.user
+*.suo
+*.db
+*.pdb
+*.cache
+*.log
+
+# React
+library-frontend/node_modules/
+library-frontend/build/
+library-frontend/.env
+
+# IDE settings
+.idea/
+.vscode/
+*.swp
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Others
+.env
+*.log

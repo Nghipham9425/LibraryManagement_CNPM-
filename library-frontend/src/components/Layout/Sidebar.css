@@ -1,0 +1,25 @@
+.sidebar {
+  min-height: calc(100vh - 56px);
+  width: 250px;
+  position: sticky;
+  top: 0;
+}
+
+.sidebar .nav-link {
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.sidebar .nav-link:hover:not(.active) {
+  background-color: #e9ecef;
+  transform: translateX(5px);
+}
+
+.sidebar .nav-link.active {
+  background-color: #0d6efd !important;
+}
+
+.sidebar .nav-link.active:hover {
+  background-color: #0b5ed7 !important;
+  transform: translateX(5px);
+}
