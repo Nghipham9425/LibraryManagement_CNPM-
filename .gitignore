@@ -1,21 +1,26 @@
 # .NET Core
 LibraryManagement.API/bin/
 LibraryManagement.API/obj/
+bin/
+obj/
 *.user
 *.suo
 *.db
 *.pdb
 *.cache
 *.log
+*.sln.docstates
 
 # React
 library-frontend/node_modules/
 library-frontend/build/
 library-frontend/.env
+node_modules/
 
 # IDE settings
 .idea/
 .vscode/
+*.iml
 *.swp
 
 # OS files
@@ -24,4 +29,17 @@ Thumbs.db
 
 # Others
 .env
+LibraryManagement.API/.env
 *.log
+*.tmp
+*.bak
+*.pid
+*.seed
+
+# npm
+package-lock.json
+yarn.lock
+
+# Database
+*.sqlite
+*.db
