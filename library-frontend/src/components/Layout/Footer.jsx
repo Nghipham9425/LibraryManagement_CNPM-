@@ -6,7 +6,7 @@ const Footer = () => {
       <Container fluid>
         <p className="text-center text-muted mb-0">
           &copy; {new Date().getFullYear()} Hệ Thống Quản Lý Thư Viện. Bản quyền
-          thuộc về.
+          thuộc về. Nhóm 7
         </p>
       </Container>
     </footer>

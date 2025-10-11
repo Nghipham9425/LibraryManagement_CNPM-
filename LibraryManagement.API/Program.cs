@@ -1,58 +1,58 @@
+using DotNetEnv;
+using Microsoft.EntityFrameworkCore;
+using LibraryManagement.API.Data;
+using LibraryManagement.API.Repositories;
+using LibraryManagement.API.Services;
+using LibraryManagement.API.Repositories.Interfaces;
+using LibraryManagement.API.Services.Interfaces;
+using LibraryManagement.API.Configurations;
+using FluentValidation.AspNetCore;
+using FluentValidation;
+using LibraryManagement.API.Validators;
+Env.Load();
+
 var builder = WebApplication.CreateBuilder(args);
+
+// Get connection string from env
+var conn = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ??
+           builder.Configuration.GetConnectionString("DefaultConnection");
+
+// Register DbContext
+builder.Services.AddDbContext<LibraryDbContext>(options =>
+    options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+builder.Services.AddSwaggerGen();
 
-// CORS for local React dev server
-const string DevCors = "DevCors";
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy(name: DevCors, policy =>
-    {
-        policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
+// CORS for React frontend
+builder.Services.AddCorsConfiguration();
+
+// Register repositories and services (inject trực tiếp class, không dùng interface)
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IBookService, BookService>();
+
+// Add FluentValidation
+builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssemblyContaining<BookValidator>();
+
+// Add controllers
+builder.Services.AddControllers();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-app.UseCors(DevCors);
+app.UseCors("AllowReactApp");
 
-// Minimal health endpoint to verify API is running
-app.MapGet("/api/health", () => Results.Ok(new { status = "ok", time = DateTime.UtcNow }))
-   .WithName("Health");
-
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+// Map controllers
+app.MapControllers();
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
