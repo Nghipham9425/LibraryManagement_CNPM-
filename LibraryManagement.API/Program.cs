@@ -9,6 +9,7 @@ using LibraryManagement.API.Configurations;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using LibraryManagement.API.Validators;
+
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,6 +32,8 @@ builder.Services.AddCorsConfiguration();
 // Register repositories and services (inject trực tiếp class, không dùng interface)
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
 
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<BookValidator>();

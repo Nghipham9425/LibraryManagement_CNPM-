@@ -1,5 +1,5 @@
-import { Navbar, Container } from 'react-bootstrap';
-import { FaBook } from 'react-icons/fa';
+import { Navbar, Container } from "react-bootstrap"
+import { FaBook } from "react-icons/fa"
 
 const Header = () => {
   return (
@@ -14,7 +14,7 @@ const Header = () => {
         </Navbar.Text>
       </Container>
     </Navbar>
-  );
-};
+  )
+}
 
-export default Header;
+export default Header

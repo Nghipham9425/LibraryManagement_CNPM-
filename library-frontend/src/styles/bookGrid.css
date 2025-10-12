@@ -1,0 +1,38 @@
+.book-card-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px 0 12px;
+  gap: 8px;
+}
+.book-card-genre {
+  font-size: 0.78rem;
+  font-weight: 500;
+  padding: 0.18rem 0.9rem;
+  border-radius: 1rem;
+  background: #f3f4f6;
+  color: #3b82f6;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+  letter-spacing: 0.2px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+}
+.book-card-dropdown .dropdown-toggle {
+  background: #fff !important;
+  border: none !important;
+  border-radius: 50% !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+  padding: 6px 8px;
+  height: 28px;
+  min-width: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

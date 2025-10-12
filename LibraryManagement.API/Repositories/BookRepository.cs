@@ -16,8 +16,14 @@ namespace LibraryManagement.API.Repositories
             _context = context;
         }
 
-        public async Task<List<Book>> GetAllAsync() => await _context.Books.ToListAsync();
-        public async Task<Book?> GetByIdAsync(int id) => await _context.Books.FindAsync(id);
+        public async Task<List<Book>> GetAllAsync() => await _context.Books
+            .Include(b => b.BookAuthors)
+            .ThenInclude(ba => ba.Author)
+            .ToListAsync();
+        public async Task<Book?> GetByIdAsync(int id) => await _context.Books
+            .Include(b => b.BookAuthors)
+            .ThenInclude(ba => ba.Author)
+            .FirstOrDefaultAsync(b => b.Id == id);
         public async Task AddAsync(Book book)
         {
             _context.Books.Add(book);
