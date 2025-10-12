@@ -11,9 +11,6 @@ namespace LibraryManagement.API.Validators
                 .NotEmpty().WithMessage("Tiêu đề sách là bắt buộc.")
                 .Length(1, 255).WithMessage("Tiêu đề sách phải từ 1 đến 255 ký tự.");
 
-            RuleFor(book => book.Author)
-                .NotEmpty().WithMessage("Tác giả là bắt buộc.")
-                .Length(1, 255).WithMessage("Tên tác giả phải từ 1 đến 255 ký tự.");
 
             RuleFor(book => book.Isbn)
                 .MaximumLength(20).WithMessage("ISBN không được vượt quá 20 ký tự.");

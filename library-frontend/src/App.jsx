@@ -1,11 +1,13 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
-import Layout from './components/Layout/Layout';
-import Dashboard from './pages/Dashboard';
-import Books from './pages/Books';
-import Members from './pages/Members';
-import Borrowing from './pages/Borrowing';
-import './App.css';
+import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { ToastContainer } from "react-toastify"
+import Layout from "./components/Layout/Layout"
+import Dashboard from "./pages/Dashboard"
+import Books from "./pages/Books"
+import Members from "./pages/Members"
+import Borrowing from "./pages/Borrowing"
+import Authors from "./pages/Authors"
+import Genres from "./pages/Genres"
+import "./App.css"
 
 function App() {
   return (
@@ -14,8 +16,10 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="books" element={<Books />} />
-          <Route path="members" element={<Members />} />
+          <Route path="authors" element={<Authors />} />
+          <Route path="genres" element={<Genres />} />
           <Route path="borrowing" element={<Borrowing />} />
+          <Route path="members" element={<Members />} />
         </Route>
       </Routes>
       <ToastContainer
@@ -31,7 +35,7 @@ function App() {
         theme="light"
       />
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default App

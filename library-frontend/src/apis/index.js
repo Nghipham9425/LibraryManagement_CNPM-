@@ -72,12 +72,25 @@ export const memberAPI = {
   delete: (id) => api.delete(`/members/${id}`),
 }
 
-export const borrowingAPI = {
-  getAll: () => api.get("/borrowing"),
-  getById: (id) => api.get(`/borrowing/${id}`),
-  create: (data) => api.post("/borrowing", data),
-  returnBook: (id) => api.put(`/borrowing/${id}/return`),
-  getOverdue: () => api.get("/borrowing/overdue"),
+export const authorAPI = {
+  getAll: async () => {
+    const response = await api.get("/authors")
+    return response.data
+  },
+  getById: async (id) => {
+    const response = await api.get(`/authors/${id}`)
+    return response.data
+  },
+  create: async (data) => {
+    const response = await api.post("/authors", data)
+    return response.data
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/authors/${id}`, data)
+    return response.data
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/authors/${id}`)
+    return response.data
+  },
 }
-
-export default api

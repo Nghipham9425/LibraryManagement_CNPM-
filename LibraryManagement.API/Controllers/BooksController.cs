@@ -12,43 +12,67 @@ namespace LibraryManagement.API.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-        private readonly IBookService _bookService;
+    private readonly IBookService _bookService;
+    private readonly FluentValidation.IValidator<Book> _bookValidator;
 
-        public BooksController(IBookService bookService)
+        public BooksController(IBookService bookService, FluentValidation.IValidator<Book> bookValidator)
         {
             _bookService = bookService;
+            _bookValidator = bookValidator;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Book>>> GetBooks() => Ok(await _bookService.GetAllBooksAsync());
+        public async Task<ActionResult<IEnumerable<BookViewModel>>> GetBooks() => Ok(await _bookService.GetAllBooksAsync());
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Book>> GetBook(int id)
+        public async Task<ActionResult<BookViewModel>> GetBook(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
             return book == null ? NotFound() : Ok(book);
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateBook(Book book)
+        public async Task<IActionResult> CreateBook([FromBody] BookInputDto bookInput)
         {
+            var book = await _bookService.CreateBookFromDto(bookInput);
+
+            var validationResult = await _bookValidator.ValidateAsync(book);
+            if (!validationResult.IsValid)
+            {
+                var errors = new List<string>();
+                foreach (var error in validationResult.Errors)
+                {
+                    errors.Add(error.ErrorMessage);
+                }
+                return BadRequest(new {
+                    message = "Dữ liệu không hợp lệ",
+                    errors = errors.ToArray()
+                });
+            }
             await _bookService.AddBookAsync(book);
             return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateBook(int id, Book book)
+        public async Task<IActionResult> UpdateBook(int id, [FromBody] BookInputDto bookInput)
         {
-            try
+            var book = await _bookService.UpdateBookFromDto(id, bookInput);
+
+            var validationResult = await _bookValidator.ValidateAsync(book);
+            if (!validationResult.IsValid)
             {
-                book.Id = id; // Set the ID from the route
-                await _bookService.UpdateBookAsync(book);
-                return NoContent();
+                var errors = new List<string>();
+                foreach (var error in validationResult.Errors)
+                {
+                    errors.Add(error.ErrorMessage);
+                }
+                return BadRequest(new {
+                    message = "Dữ liệu không hợp lệ",
+                    errors = errors.ToArray()
+                });
             }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _bookService.UpdateBookAsync(book);
+            return Ok(book);
         }
 
         [HttpDelete("{id}")]
@@ -72,9 +96,9 @@ namespace LibraryManagement.API.Controllers
         {
             var sampleBooks = new List<Book>
             {
-                new Book { Title = "Database System Concepts", Author = "Abraham Silberschatz", Isbn = "9780073523323", Genre = "Computer Science", PublicationYear = 2010, Publisher = "McGraw-Hill" },
-                new Book { Title = "Clean Code", Author = "Robert C. Martin", Isbn = "9780132350884", Genre = "Programming", PublicationYear = 2008, Publisher = "Prentice Hall" },
-                new Book { Title = "The Pragmatic Programmer", Author = "Andrew Hunt", Isbn = "9780201616224", Genre = "Programming", PublicationYear = 1999, Publisher = "Addison-Wesley" }
+                new Book { Title = "Database System Concepts", Isbn = "9780073523323", Genre = "Computer Science", PublicationYear = 2010, Publisher = "McGraw-Hill" },
+                new Book { Title = "Clean Code", Isbn = "9780132350884", Genre = "Programming", PublicationYear = 2008, Publisher = "Prentice Hall" },
+                new Book { Title = "The Pragmatic Programmer", Isbn = "9780201616224", Genre = "Programming", PublicationYear = 1999, Publisher = "Addison-Wesley" }
             };
 
             foreach (var book in sampleBooks)
