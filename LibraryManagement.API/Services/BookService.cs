@@ -23,47 +23,26 @@ namespace LibraryManagement.API.Services
 
         public async Task AddBookAsync(Book book)
         {
-            // Validation: Kiểm tra ISBN không trùng (nếu có)
+            // Kiểm tra ISBN không trùng
             if (!string.IsNullOrEmpty(book.Isbn))
             {
                 var existingBooks = await _bookRepository.GetAllAsync();
                 if (existingBooks.Any(b => b.Isbn == book.Isbn))
                 {
-                    throw new ArgumentException("ISBN đã tồn tại");
+                    throw new LibraryManagement.API.Utils.ApiException(400, "ISBN đã tồn tại", new[] { "ISBN này đã có trong hệ thống" });
                 }
-            }
-            // Validation: Title và Author bắt buộc
-            if (string.IsNullOrWhiteSpace(book.Title) || string.IsNullOrWhiteSpace(book.Author))
-            {
-                throw new ArgumentException("Title và Author là bắt buộc");
             }
             await _bookRepository.AddAsync(book);
         }
 
         public async Task UpdateBookAsync(Book book)
         {
-            // Validation: Title và Author bắt buộc
-            if (string.IsNullOrWhiteSpace(book.Title) || string.IsNullOrWhiteSpace(book.Author))
-            {
-                throw new ArgumentException("Title và Author là bắt buộc");
-            }
-
-            // Validation: Kiểm tra ISBN không trùng với sách khác (nếu có) - bỏ qua cho update để tránh lỗi duplicate
-            // if (!string.IsNullOrEmpty(book.Isbn))
-            // {
-            //     var existingBooks = await _bookRepository.GetAllAsync();
-            //     if (existingBooks.Any(b => b.Isbn == book.Isbn && b.Id != book.Id))
-            //     {
-            //         throw new ArgumentException("ISBN đã tồn tại");
-            //     }
-            // }
 
             await _bookRepository.UpdateAsync(book);
         }
 
         public async Task DeleteBookAsync(int id) => await _bookRepository.DeleteAsync(id);
 
-        // Thêm logic tìm kiếm sách
         public async Task<IEnumerable<Book>> SearchBooksAsync(string? title, string? author, string? genre)
         {
             var books = await _bookRepository.GetAllAsync();

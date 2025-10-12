@@ -8,6 +8,14 @@ import BookFormModal from "../components/Books/BookFormModal"
 import BookSearch from "../components/Books/BookSearch"
 
 const Books = () => {
+  // Helper for extracting error messages from API response
+  const bookErrorMessages = (error) => {
+    const validationErrors = error.response?.data?.errors
+    if (error.response?.status === 400 && validationErrors) {
+      return Object.values(validationErrors).flat()
+    }
+    return [error.response?.data?.message || "Lỗi khi lưu sách"]
+  }
   const [books, setBooks] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
@@ -40,12 +48,19 @@ const Books = () => {
   }
 
   const handleSubmit = async (formData) => {
+    const cleanData = {
+      ...formData,
+      publicationYear:
+        formData.publicationYear === "" || formData.publicationYear === null
+          ? null
+          : Number(formData.publicationYear),
+    }
     try {
       if (editingBook) {
-        await bookAPI.update(editingBook.id, formData)
+        await bookAPI.update(editingBook.id, cleanData)
         toast.success("Cập nhật sách thành công")
       } else {
-        await bookAPI.create(formData)
+        await bookAPI.create(cleanData)
         toast.success("Thêm sách thành công")
       }
       setShowModal(false)
@@ -53,15 +68,7 @@ const Books = () => {
       resetForm()
       fetchBooks()
     } catch (error) {
-      if (error.response?.status === 400 && error.response?.data?.errors) {
-        // Handle validation errors
-        const validationErrors = error.response.data.errors
-        Object.values(validationErrors).forEach((messages) => {
-          messages.forEach((message) => toast.error(message))
-        })
-      } else {
-        toast.error(error.response?.data?.message || "Lỗi khi lưu sách")
-      }
+      bookErrorMessages(error).forEach((msg) => toast.error(msg))
     }
   }
 

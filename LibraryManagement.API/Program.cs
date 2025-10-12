@@ -31,9 +31,7 @@ builder.Services.AddCorsConfiguration();
 // Register repositories and services (inject trực tiếp class, không dùng interface)
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IBookService, BookService>();
 
-// Add FluentValidation
 builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<BookValidator>();
 
@@ -41,6 +39,8 @@ builder.Services.AddValidatorsFromAssemblyContaining<BookValidator>();
 builder.Services.AddControllers();
 
 var app = builder.Build();
+// Use error handling middleware (global exception handler)
+app.UseMiddleware<LibraryManagement.API.Middlewares.ErrorHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

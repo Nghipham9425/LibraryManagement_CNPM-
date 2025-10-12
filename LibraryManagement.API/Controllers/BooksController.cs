@@ -12,11 +12,13 @@ namespace LibraryManagement.API.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-        private readonly IBookService _bookService;
+    private readonly IBookService _bookService;
+    private readonly FluentValidation.IValidator<Book> _bookValidator;
 
-        public BooksController(IBookService bookService)
+        public BooksController(IBookService bookService, FluentValidation.IValidator<Book> bookValidator)
         {
             _bookService = bookService;
+            _bookValidator = bookValidator;
         }
 
         [HttpGet]
@@ -32,6 +34,14 @@ namespace LibraryManagement.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBook(Book book)
         {
+            var validationResult = await _bookValidator.ValidateAsync(book);
+            if (!validationResult.IsValid)
+            {
+                return BadRequest(new {
+                    message = "Dữ liệu không hợp lệ",
+                    errors = validationResult.Errors.Select(e => e.ErrorMessage).ToArray()
+                });
+            }
             await _bookService.AddBookAsync(book);
             return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
         }
@@ -39,16 +49,17 @@ namespace LibraryManagement.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBook(int id, Book book)
         {
-            try
+            book.Id = id;
+            var validationResult = await _bookValidator.ValidateAsync(book);
+            if (!validationResult.IsValid)
             {
-                book.Id = id; // Set the ID from the route
-                await _bookService.UpdateBookAsync(book);
-                return NoContent();
+                return BadRequest(new {
+                    message = "Dữ liệu không hợp lệ",
+                    errors = validationResult.Errors.Select(e => e.ErrorMessage).ToArray()
+                });
             }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            await _bookService.UpdateBookAsync(book);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
