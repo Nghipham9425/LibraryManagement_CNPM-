@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
-import { login } from '../../../apis/auth';
+import { login, me } from '@/apis/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AdminLogin = () => {
@@ -17,10 +17,13 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const data = await login(formData);
-      localStorage.setItem('refreshToken', data.refreshToken);
-      // Có thể thêm logic để kiểm tra role admin ở đây
-      navigate('/admin/dashboard');
+      await login(formData);
+      const user = await me();
+      if (user.role === 'Admin') {
+        navigate('/admin/management/Dashboard');
+      } else {
+        setError('Bạn không có quyền truy cập admin');
+      }
     } catch {
       setError('Đăng nhập thất bại');
     }

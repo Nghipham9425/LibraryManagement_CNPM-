@@ -46,11 +46,7 @@
           "dependencies": {
             "AutoMapper": {
               "target": "Package",
-              "version": "[12.0.1, )"
-            },
-            "AutoMapper.Extensions.Microsoft.DependencyInjection": {
-              "target": "Package",
-              "version": "[12.0.1, )"
+              "version": "[15.0.1, )"
             },
             "BCrypt.Net-Next": {
               "target": "Package",
@@ -66,7 +62,7 @@
             },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
-              "version": "[9.0.10, )"
+              "version": "[9.0.9, )"
             },
             "Microsoft.AspNetCore.OpenApi": {
               "target": "Package",
@@ -88,7 +84,7 @@
             },
             "System.IdentityModel.Tokens.Jwt": {
               "target": "Package",
-              "version": "[8.14.0, )"
+              "version": "[8.3.1, )"
             }
           },
           "imports": [

@@ -1,7 +1,24 @@
-import { Card, Row, Col, Container } from 'react-bootstrap';
+import { Card, Row, Col, Container, Alert } from 'react-bootstrap';
 import { FaBook, FaUsers, FaExchangeAlt, FaCheckCircle } from 'react-icons/fa';
+import { useEffect, useState } from 'react';
+import { me } from '@/apis/auth';
 
 const Dashboard = () => {
+  const [user, setUser] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await me();
+        setUser(userData);
+      } catch {
+        setError('Không thể tải thông tin user');
+      }
+    };
+    fetchUser();
+  }, []);
+
   const stats = [
     {
       title: 'Tổng Số Sách',
@@ -35,9 +52,12 @@ const Dashboard = () => {
 
   return (
     <Container fluid>
+      {error && <Alert variant="danger">{error}</Alert>}
       <div className="mb-4">
         <h2 className="fw-bold">Tổng Quan</h2>
-        <p className="text-muted">Chào mừng đến với Hệ Thống Quản Lý Thư Viện</p>
+        <p className="text-muted">
+          {user ? `Chào ${user.userName}, bạn là ${user.role}!` : 'Chào mừng đến với Hệ Thống Quản Lý Thư Viện'}
+        </p>
       </div>
 
       <Row className="g-4">
