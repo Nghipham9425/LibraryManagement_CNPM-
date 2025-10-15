@@ -7,7 +7,6 @@
 /home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/LibraryManagement.API.dll
 /home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/LibraryManagement.API.pdb
 /home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/AutoMapper.dll
-/home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 /home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/DotNetEnv.dll
 /home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/FluentValidation.dll
 /home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/FluentValidation.AspNetCore.dll

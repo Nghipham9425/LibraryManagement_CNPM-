@@ -13,6 +13,8 @@ namespace LibraryManagement.API.Data
         public DbSet<Borrowing> Borrowings { get; set; } // Thêm cho giao dịch mượn
         public DbSet<BookAuthor> BookAuthors { get; set; }
         public DbSet<Author> Authors { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -20,6 +22,8 @@ namespace LibraryManagement.API.Data
             modelBuilder.Entity<BookAuthor>()
                 .HasKey(ba => new { ba.BookId, ba.AuthorId });
             modelBuilder.Entity<Author>().ToTable("Authors");
+            modelBuilder.Entity<User>().ToTable("Users");
+            modelBuilder.Entity<RefreshToken>().ToTable("RefreshTokens");
         }
     }
 }

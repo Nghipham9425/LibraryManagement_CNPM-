@@ -14,16 +14,16 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const data = await login(formData);
-      localStorage.setItem('refreshToken', data.refreshToken);
-      navigate('/dashboard');
-    } catch {
-      setError('Đăng nhập thất bại');
-    }
-  };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   try {
+  //     const data = await login(formData);
+  //     localStorage.setItem('refreshToken', data.refreshToken);
+  //     navigate('/dashboard');
+  //   } catch {
+  //     setError('Đăng nhập thất bại');
+  //   }
+  // };
 
   return (
     <div style={{
