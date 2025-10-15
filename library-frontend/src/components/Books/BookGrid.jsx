@@ -6,7 +6,7 @@ const BookGrid = ({ books, onEdit, onDelete, onViewDetails }) => {
   return (
     <Row className="g-3">
       {books.map((book) => (
-        <Col key={book.id} xs={12} sm={6} md={4} lg={3} xl={3}>
+        <Col key={book.id} xs={12} sm={6} md={4} lg={4} xl={4}>
           <Card className="h-100 shadow-sm book-card">
             <div className="book-card-image-wrap">
               <div className="book-card-topbar">

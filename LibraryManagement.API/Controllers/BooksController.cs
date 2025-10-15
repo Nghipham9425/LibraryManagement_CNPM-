@@ -1,10 +1,10 @@
 using LibraryManagement.API.Services;
-using LibraryManagement.API.Services.Interfaces;
 using LibraryManagement.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 
 namespace LibraryManagement.API.Controllers
 {
@@ -12,20 +12,20 @@ namespace LibraryManagement.API.Controllers
     [Route("api/[controller]")]
     public class BooksController : ControllerBase
     {
-    private readonly IBookService _bookService;
-    private readonly FluentValidation.IValidator<Book> _bookValidator;
+        private readonly BookService _bookService;
+        private readonly FluentValidation.IValidator<Book> _bookValidator;
+        private readonly IMapper _mapper;
 
-        public BooksController(IBookService bookService, FluentValidation.IValidator<Book> bookValidator)
+        public BooksController(BookService bookService, FluentValidation.IValidator<Book> bookValidator, IMapper mapper)
         {
             _bookService = bookService;
             _bookValidator = bookValidator;
-        }
-
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<BookViewModel>>> GetBooks() => Ok(await _bookService.GetAllBooksAsync());
+            _mapper = mapper;
+        }        [HttpGet]
+        public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks() => Ok(await _bookService.GetAllBooksAsync());
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<BookViewModel>> GetBook(int id)
+        public async Task<ActionResult<BookDto>> GetBook(int id)
         {
             var book = await _bookService.GetBookByIdAsync(id);
             return book == null ? NotFound() : Ok(book);
@@ -34,21 +34,15 @@ namespace LibraryManagement.API.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateBook([FromBody] BookInputDto bookInput)
         {
-            var book = await _bookService.CreateBookFromDto(bookInput);
+            var book = _mapper.Map<Book>(bookInput);
 
             var validationResult = await _bookValidator.ValidateAsync(book);
             if (!validationResult.IsValid)
             {
-                var errors = new List<string>();
-                foreach (var error in validationResult.Errors)
-                {
-                    errors.Add(error.ErrorMessage);
-                }
-                return BadRequest(new {
-                    message = "Dữ liệu không hợp lệ",
-                    errors = errors.ToArray()
-                });
+                var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new { message = "Dữ liệu không hợp lệ", errors });
             }
+
             await _bookService.AddBookAsync(book);
             return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
         }
@@ -56,21 +50,16 @@ namespace LibraryManagement.API.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateBook(int id, [FromBody] BookInputDto bookInput)
         {
-            var book = await _bookService.UpdateBookFromDto(id, bookInput);
+            var book = _mapper.Map<Book>(bookInput);
+            book.Id = id;
 
             var validationResult = await _bookValidator.ValidateAsync(book);
             if (!validationResult.IsValid)
             {
-                var errors = new List<string>();
-                foreach (var error in validationResult.Errors)
-                {
-                    errors.Add(error.ErrorMessage);
-                }
-                return BadRequest(new {
-                    message = "Dữ liệu không hợp lệ",
-                    errors = errors.ToArray()
-                });
+                var errors = validationResult.Errors.Select(e => e.ErrorMessage).ToList();
+                return BadRequest(new { message = "Dữ liệu không hợp lệ", errors });
             }
+
             await _bookService.UpdateBookAsync(book);
             return Ok(book);
         }
@@ -84,36 +73,11 @@ namespace LibraryManagement.API.Controllers
 
         // Endpoint tìm kiếm sách
         [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<Book>>> SearchBooks([FromQuery] string? title, [FromQuery] string? author, [FromQuery] string? genre)
+        public async Task<ActionResult<IEnumerable<BookDto>>> SearchBooks([FromQuery] string? title, [FromQuery] string? author, [FromQuery] string? genre)
         {
             var books = await _bookService.SearchBooksAsync(title, author, genre);
-            return Ok(books);
-        }
-
-        // Endpoint seed data mẫu
-        [HttpPost("seed")]
-        public async Task<IActionResult> SeedBooks()
-        {
-            var sampleBooks = new List<Book>
-            {
-                new Book { Title = "Database System Concepts", Isbn = "9780073523323", Genre = "Computer Science", PublicationYear = 2010, Publisher = "McGraw-Hill" },
-                new Book { Title = "Clean Code", Isbn = "9780132350884", Genre = "Programming", PublicationYear = 2008, Publisher = "Prentice Hall" },
-                new Book { Title = "The Pragmatic Programmer", Isbn = "9780201616224", Genre = "Programming", PublicationYear = 1999, Publisher = "Addison-Wesley" }
-            };
-
-            foreach (var book in sampleBooks)
-            {
-                try
-                {
-                    await _bookService.AddBookAsync(book);
-                }
-                catch
-                {
-                    // Bỏ qua nếu đã tồn tại
-                }
-            }
-
-            return Ok("Seed data thành công");
+            var bookDtos = _mapper.Map<IEnumerable<BookDto>>(books);
+            return Ok(bookDtos);
         }
     }
 }

@@ -3,12 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using LibraryManagement.API.Data;
 using LibraryManagement.API.Repositories;
 using LibraryManagement.API.Services;
-using LibraryManagement.API.Repositories.Interfaces;
-using LibraryManagement.API.Services.Interfaces;
 using LibraryManagement.API.Configurations;
 using FluentValidation.AspNetCore;
 using FluentValidation;
 using LibraryManagement.API.Validators;
+using LibraryManagement.API.Mappers;
 
 Env.Load();
 
@@ -23,19 +22,21 @@ builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseMySql(conn, ServerVersion.AutoDetect(conn)));
 
 // Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// Learn more about configuring configuring Swagger/OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddSwaggerGen();
+
+// AutoMapper
+builder.Services.AddAutoMapper(config => config.AddMaps(typeof(Program).Assembly));
 
 // CORS for React frontend
 builder.Services.AddCorsConfiguration();
 
-// Register repositories and services (inject trực tiếp class, không dùng interface)
-builder.Services.AddScoped<IBookRepository, BookRepository>();
-builder.Services.AddScoped<IBookService, BookService>();
-builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
-builder.Services.AddScoped<IAuthorService, AuthorService>();
+// Register repositories and services
+builder.Services.AddScoped<BookRepository>();
+builder.Services.AddScoped<BookService>();
+builder.Services.AddScoped<AuthorRepository>();
+builder.Services.AddScoped<AuthorService>();
 
-builder.Services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();
 builder.Services.AddValidatorsFromAssemblyContaining<BookValidator>();
 
 // Add controllers

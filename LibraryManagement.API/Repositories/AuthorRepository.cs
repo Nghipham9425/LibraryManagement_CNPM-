@@ -1,13 +1,13 @@
 using LibraryManagement.API.Models;
-using LibraryManagement.API.Repositories.Interfaces;
 using LibraryManagement.API.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using LibraryManagement.API.Utils;
 
 namespace LibraryManagement.API.Repositories
 {
-    public class AuthorRepository : IAuthorRepository
+    public class AuthorRepository
     {
         private readonly LibraryDbContext _context;
 

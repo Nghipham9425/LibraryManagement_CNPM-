@@ -138,3 +138,12 @@
 /home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/obj/Debug/net9.0/LibraryManagement.API.pdb
 /home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/obj/Debug/net9.0/LibraryManagement.API.genruntimeconfig.cache
 /home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/obj/Debug/net9.0/ref/LibraryManagement.API.dll
+/home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/BCrypt.Net-Next.dll
+/home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/Microsoft.AspNetCore.Authentication.JwtBearer.dll
+/home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/Microsoft.IdentityModel.Abstractions.dll
+/home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/Microsoft.IdentityModel.JsonWebTokens.dll
+/home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/Microsoft.IdentityModel.Logging.dll
+/home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.dll
+/home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+/home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/Microsoft.IdentityModel.Tokens.dll
+/home/nghi/RiderProjects/LibraryManagement/LibraryManagement.API/bin/Debug/net9.0/System.IdentityModel.Tokens.Jwt.dll
