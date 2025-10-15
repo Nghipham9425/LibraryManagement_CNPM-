@@ -1,26 +1,25 @@
 using LibraryManagement.API.Repositories;
-using LibraryManagement.API.Repositories.Interfaces;
-using LibraryManagement.API.Services.Interfaces;
 using LibraryManagement.API.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
+using LibraryManagement.API.Utils;
 
 namespace LibraryManagement.API.Services
 {
-    public class AuthorService : IAuthorService
+    public class AuthorService
     {
-        private readonly IAuthorRepository _authorRepository;
+        private readonly AuthorRepository _authorRepository;
 
-        public AuthorService(IAuthorRepository authorRepository)
+        public AuthorService(AuthorRepository authorRepository)
         {
             _authorRepository = authorRepository;
         }
 
-        public async Task<IEnumerable<AuthorViewModel>> GetAllAuthorsAsync()
+        public async Task<IEnumerable<AuthorDto>> GetAllAuthorsAsync()
         {
             var authors = await _authorRepository.GetAllWithBookCountAsync();
-            return authors.Select(a => new AuthorViewModel
+            return authors.Select(a => new AuthorDto
             {
                 Id = a.Id,
                 Name = a.Name,
@@ -36,7 +35,7 @@ namespace LibraryManagement.API.Services
             var existingAuthors = await _authorRepository.GetAllAsync();
             if (existingAuthors.Any(a => a.Name.ToLower() == author.Name.ToLower()))
             {
-                throw new LibraryManagement.API.Utils.ApiException(400, "Tên tác giả đã tồn tại", new[] { "Tên tác giả này đã có trong hệ thống" });
+                throw new ApiException(400, "Tên tác giả đã tồn tại", new[] { "Tên tác giả này đã có trong hệ thống" });
             }
             await _authorRepository.AddAsync(author);
         }

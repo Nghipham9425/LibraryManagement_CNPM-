@@ -19,7 +19,7 @@ namespace LibraryManagement.API.Validators
                 .MaximumLength(100).WithMessage("Thể loại không được vượt quá 100 ký tự.");
 
             RuleFor(book => book.PublicationYear)
-                .InclusiveBetween(1000, 2100).WithMessage("Năm xuất bản phải từ 1000 đến 2100.")
+                .InclusiveBetween(1300, 2100).WithMessage("Năm xuất bản phải từ 1300 đến 2100.")
                 .When(book => book.PublicationYear.HasValue);
 
             RuleFor(book => book.Publisher)

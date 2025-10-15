@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
-import { login } from '../apis/auth';
+import { login } from "../../../apis/auth";
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Login = () => {
@@ -42,7 +42,7 @@ const Login = () => {
 
       <Container style={{ position: 'relative', zIndex: 1 }}>
         <Row className="justify-content-center">
-          <Col md={6} lg={5} xl={4}>
+          <Col md={7} lg={6} xl={5}>
             <Card className="shadow border-0" style={{
               borderRadius: '10px',
               backgroundColor: 'rgba(255,255,255,0.95)',

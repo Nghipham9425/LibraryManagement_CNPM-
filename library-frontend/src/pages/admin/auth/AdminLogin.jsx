@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
-import { login } from '../apis/auth';
+import { login } from '../../../apis/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AdminLogin = () => {

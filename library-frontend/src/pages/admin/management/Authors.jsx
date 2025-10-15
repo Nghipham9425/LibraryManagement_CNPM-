@@ -11,7 +11,7 @@ import {
   Badge,
 } from "react-bootstrap"
 import { FaUsers, FaPlus, FaEdit, FaTrash } from "react-icons/fa"
-import { authorAPI } from "../apis"
+import { authorAPI } from "../../../apis"
 
 const Authors = () => {
   const [authors, setAuthors] = useState([])

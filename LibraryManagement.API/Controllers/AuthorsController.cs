@@ -1,4 +1,4 @@
-using LibraryManagement.API.Services.Interfaces;
+using LibraryManagement.API.Services;
 using LibraryManagement.API.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -11,17 +11,17 @@ namespace LibraryManagement.API.Controllers
     [Route("api/[controller]")]
     public class AuthorsController : ControllerBase
     {
-        private readonly IAuthorService _authorService;
+        private readonly AuthorService _authorService;
         private readonly IValidator<Author> _authorValidator;
 
-        public AuthorsController(IAuthorService authorService, IValidator<Author> authorValidator)
+        public AuthorsController(AuthorService authorService, IValidator<Author> authorValidator)
         {
             _authorService = authorService;
             _authorValidator = authorValidator;
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AuthorViewModel>>> GetAuthors() => Ok(await _authorService.GetAllAuthorsAsync());
+        public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors() => Ok(await _authorService.GetAllAuthorsAsync());
 
         [HttpGet("{id}")]
         public async Task<ActionResult<Author>> GetAuthor(int id)

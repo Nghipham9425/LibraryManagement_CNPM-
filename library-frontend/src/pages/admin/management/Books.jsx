@@ -2,14 +2,13 @@ import { useState, useEffect } from "react"
 import { Card, Button, Container, Spinner } from "react-bootstrap"
 import { FaPlus, FaBook } from "react-icons/fa"
 import { toast } from "react-toastify"
-import { bookAPI, authorAPI } from "../apis"
-import BookGrid from "../components/Books/BookGrid"
-import BookFormModal from "../components/Books/BookFormModal"
-import BookDetailsModal from "../components/Books/BookDetailsModal"
-import BookSearch from "../components/Books/BookSearch"
+import { bookAPI, authorAPI } from "../../../apis"
+import BookGrid from "../../../components/Books/BookGrid"
+import BookFormModal from "../../../components/Books/BookFormModal"
+import BookDetailsModal from "../../../components/Books/BookDetailsModal"
+import BookSearch from "../../../components/Books/BookSearch"
 
 const Books = () => {
-  // Helper for extracting error messages from API response
   const bookErrorMessages = (error) => {
     const validationErrors = error.response?.data?.errors
     if (error.response?.status === 400 && validationErrors) {

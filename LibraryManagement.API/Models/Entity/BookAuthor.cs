@@ -6,7 +6,7 @@ namespace LibraryManagement.API.Models
     public int BookId { get; set; }
     public int AuthorId { get; set; }
 
-        // Navigation properties
+   
     [JsonIgnore]
     public Book? Book { get; set; }
     [JsonIgnore]
