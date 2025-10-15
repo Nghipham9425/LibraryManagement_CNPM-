@@ -1,5 +1,6 @@
 namespace LibraryManagement.API.Models
 {
+    //Dùng để nhận dữ liệu từ client
     public class BookInputDto
     {
         public string Title { get; set; } = string.Empty;
