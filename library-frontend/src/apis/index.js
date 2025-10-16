@@ -1,7 +1,7 @@
 import axios from "axios"
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "http://localhost:5000/api", // Updated to match the backend port
   timeout: 10000,
   headers: {
     "Content-Type": "application/json",
@@ -94,3 +94,44 @@ export const authorAPI = {
     return response.data
   },
 }
+
+// Borrowing APIs for end-user actions
+export const borrowingAPI = {
+  // Lists
+  getActive: async (libraryCardId) => {
+    const res = await api.get(`/borrowings/active/${libraryCardId}`)
+    return res.data
+  },
+  getHistory: async (libraryCardId) => {
+    const res = await api.get(`/borrowings/history/${libraryCardId}`)
+    return res.data
+  },
+  getOverdue: async (libraryCardId) => {
+    const res = await api.get(`/borrowings/overdue/${libraryCardId}`)
+    return res.data
+  },
+
+  // Actions
+  borrow: async ({ LibraryCardId, BookItemId, Days }) => {
+    const res = await api.post(`/borrowings/borrow`, { LibraryCardId, BookItemId, Days })
+    return res.data
+  },
+  returnBook: async ({ BorrowingId }) => {
+    const res = await api.post(`/borrowings/return`, { BorrowingId })
+    return res.data
+  },
+  renew: async ({ BorrowingId, ExtendDays = 7 }) => {
+    const res = await api.post(`/borrowings/renew`, { BorrowingId, ExtendDays })
+    return res.data
+  },
+}
+
+// Test API connection
+;(async () => {
+  try {
+    const response = await bookAPI.getAll()
+    console.log("Books fetched successfully:", response)
+  } catch (error) {
+    console.error("Error fetching books:", error)
+  }
+})()

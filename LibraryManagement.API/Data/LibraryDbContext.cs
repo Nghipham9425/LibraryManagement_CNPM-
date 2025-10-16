@@ -13,6 +13,7 @@ namespace LibraryManagement.API.Data
         public DbSet<Borrowing> Borrowings { get; set; } // Thêm cho giao dịch mượn
         public DbSet<BookAuthor> BookAuthors { get; set; }
         public DbSet<Author> Authors { get; set; }
+        public DbSet<Notification> Notifications { get; set; } // Thông báo
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,6 +1,7 @@
 using LibraryManagement.API.Services;
 using LibraryManagement.API.Services.Interfaces;
 using LibraryManagement.API.Models;
+using LibraryManagement.API.Data;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Collections.Generic;
@@ -14,11 +15,13 @@ namespace LibraryManagement.API.Controllers
     {
     private readonly IBookService _bookService;
     private readonly FluentValidation.IValidator<Book> _bookValidator;
+    private readonly LibraryDbContext _context;
 
-        public BooksController(IBookService bookService, FluentValidation.IValidator<Book> bookValidator)
+        public BooksController(IBookService bookService, FluentValidation.IValidator<Book> bookValidator, LibraryDbContext context)
         {
             _bookService = bookService;
             _bookValidator = bookValidator;
+            _context = context;
         }
 
         [HttpGet]
@@ -106,6 +109,10 @@ namespace LibraryManagement.API.Controllers
                 try
                 {
                     await _bookService.AddBookAsync(book);
+                    // create a couple of physical copies (BookItems) for borrowing
+                    _context.BookItems.Add(new BookItem { BookId = book.Id, ControlNumber = $"{book.Id}-CN-001" });
+                    _context.BookItems.Add(new BookItem { BookId = book.Id, ControlNumber = $"{book.Id}-CN-002" });
+                    await _context.SaveChangesAsync();
                 }
                 catch
                 {

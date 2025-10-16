@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace LibraryManagement.API.Models
 {
@@ -18,8 +19,9 @@ namespace LibraryManagement.API.Models
 
         [Required]
         public int BookId { get; set; }
-        [ForeignKey("BookId")]
-        public Book Book { get; set; } = null!;
+    [ForeignKey("BookId")]
+    [JsonIgnore]
+    public Book Book { get; set; } = null!;
 
         [Required]
         public string ControlNumber { get; set; } = string.Empty; 

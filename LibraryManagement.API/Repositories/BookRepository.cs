@@ -17,10 +17,12 @@ namespace LibraryManagement.API.Repositories
         }
 
         public async Task<List<Book>> GetAllAsync() => await _context.Books
+            .Include(b => b.BookItems)
             .Include(b => b.BookAuthors)
             .ThenInclude(ba => ba.Author)
             .ToListAsync();
         public async Task<Book?> GetByIdAsync(int id) => await _context.Books
+            .Include(b => b.BookItems)
             .Include(b => b.BookAuthors)
             .ThenInclude(ba => ba.Author)
             .FirstOrDefaultAsync(b => b.Id == id);

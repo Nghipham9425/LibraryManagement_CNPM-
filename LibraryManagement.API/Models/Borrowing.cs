@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace LibraryManagement.API.Models
 {
@@ -18,6 +19,7 @@ namespace LibraryManagement.API.Models
         [Required]
         public int LibraryCardId { get; set; } // FK đến LibraryCard
         [ForeignKey("LibraryCardId")]
+        [JsonIgnore]
         public LibraryCard LibraryCard { get; set; } = null!;
         [Required]
         public int BookItemId { get; set; } // FK đến BookItem
