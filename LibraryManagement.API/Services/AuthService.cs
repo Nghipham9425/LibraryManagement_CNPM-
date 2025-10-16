@@ -139,11 +139,12 @@ namespace LibraryManagement.API.Services
         public async Task Logout()
         {
             var httpContext = _httpContextAccessor.HttpContext;
-            
+
             // Clear cookies
             if (httpContext != null)
             {
                 httpContext.Response.Cookies.Delete("accessToken");
+
             }
         }
     }

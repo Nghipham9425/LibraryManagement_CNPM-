@@ -43,6 +43,9 @@ builder.Services.AddScoped<AuthorRepository>();
 builder.Services.AddScoped<AuthorService>();
 builder.Services.AddScoped<AuthRepository>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<BorrowingRepository>();
+builder.Services.AddScoped<BorrowingService>();
+builder.Services.AddScoped<NotificationService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<BookValidator>();
 

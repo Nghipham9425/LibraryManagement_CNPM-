@@ -53,6 +53,9 @@ cd LibraryManagement
 
 //file env nhắn zalo để lấy link db
 
+thêm này vô .env
+Jwt__Key=eZOZZ2XhtQz9Bxw/z5GKWAhlWy/vgSkC6yEVWmF8JZY=
+
 #### Cài đặt dependencies và chạy migration
 
 ```bash

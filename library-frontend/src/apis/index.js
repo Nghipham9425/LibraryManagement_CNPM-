@@ -94,3 +94,30 @@ export const authorAPI = {
     return response.data
   },
 }
+
+export const borrowingAPI = {
+  getActive: async (libraryCardId) => {
+    const response = await api.get(`/borrowings/active/${libraryCardId}`)
+    return response.data
+  },
+  getHistory: async (libraryCardId) => {
+    const response = await api.get(`/borrowings/history/${libraryCardId}`)
+    return response.data
+  },
+  getOverdue: async (libraryCardId) => {
+    const response = await api.get(`/borrowings/overdue/${libraryCardId}`)
+    return response.data
+  },
+  borrow: async (data) => {
+    const response = await api.post("/borrowings/borrow", data)
+    return response.data
+  },
+  returnBook: async (data) => {
+    const response = await api.post("/borrowings/return", data)
+    return response.data
+  },
+  renew: async (data) => {
+    const response = await api.post("/borrowings/renew", data)
+    return response.data
+  },
+}
