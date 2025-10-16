@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace LibraryManagement.API.Models
 {
@@ -19,6 +20,7 @@ namespace LibraryManagement.API.Models
         public CardStatus Status { get; set; } = CardStatus.Active; // Tình trạng thẻ
 
         // Quan hệ 1:N với Borrowing
+        [JsonIgnore]
         public ICollection<Borrowing> Borrowings { get; set; } = new List<Borrowing>();
     }
 }

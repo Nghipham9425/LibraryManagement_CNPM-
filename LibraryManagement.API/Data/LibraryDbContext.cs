@@ -1,4 +1,5 @@
 using LibraryManagement.API.Models;
+using LibraryManagement.API.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.API.Data
@@ -15,6 +16,7 @@ namespace LibraryManagement.API.Data
         public DbSet<Author> Authors { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
+        public DbSet<Notification> Notifications { get; set; } // Thông báo
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,8 +24,6 @@ namespace LibraryManagement.API.Data
             modelBuilder.Entity<BookAuthor>()
                 .HasKey(ba => new { ba.BookId, ba.AuthorId });
             modelBuilder.Entity<Author>().ToTable("Authors");
-            modelBuilder.Entity<User>().ToTable("Users");
-            modelBuilder.Entity<RefreshToken>().ToTable("RefreshTokens");
         }
     }
 }
