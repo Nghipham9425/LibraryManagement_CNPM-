@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
-import { login, me } from '@/apis/auth';
+import { login } from '@/apis/auth';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AdminLogin = () => {
@@ -18,12 +18,7 @@ const AdminLogin = () => {
     e.preventDefault();
     try {
       await login(formData);
-      const user = await me();
-      if (user.role === 'Admin') {
-        navigate('/admin/management/Dashboard');
-      } else {
-        setError('Bạn không có quyền truy cập admin');
-      }
+      navigate('/admin');
     } catch {
       setError('Đăng nhập thất bại');
     }
@@ -116,12 +111,6 @@ const AdminLogin = () => {
                     Đăng Nhập Admin
                   </Button>
                 </Form>
-
-                <div className="text-center mt-3">
-                  <small className="text-muted">
-                    <a href="/" className="text-primary fw-bold">← Quay lại trang chủ</a>
-                  </small>
-                </div>
               </Card.Body>
             </Card>
           </Col>

@@ -51,6 +51,18 @@ namespace LibraryManagement.API.Services
             await _authorRepository.UpdateAsync(author);
         }
 
-        public async Task DeleteAuthorAsync(int id) => await _authorRepository.DeleteAsync(id);
+        public async Task DeleteAuthorAsync(int id)
+        {
+            var author = await _authorRepository.GetByIdWithBooksAsync(id);
+            if (author == null)
+            {
+                throw new ApiException(404, "Tác giả không tồn tại");
+            }
+            if (author.BookAuthors.Any())
+            {
+                throw new ApiException(400, "Không thể xóa tác giả đã có sách liên kết", new[] { "Tác giả này đã được gắn với một hoặc nhiều sách. Vui lòng gỡ bỏ liên kết trước khi xóa." });
+            }
+            await _authorRepository.DeleteAsync(id);
+        }
     }
 }

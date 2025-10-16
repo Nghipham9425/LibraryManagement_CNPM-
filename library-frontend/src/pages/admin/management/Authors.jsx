@@ -12,6 +12,7 @@ import {
 } from "react-bootstrap"
 import { FaUsers, FaPlus, FaEdit, FaTrash } from "react-icons/fa"
 import { authorAPI } from "../../../apis"
+import { toast } from 'react-toastify'
 
 const Authors = () => {
   const [authors, setAuthors] = useState([])
@@ -73,11 +74,12 @@ const Authors = () => {
       }
       await loadAuthors()
       handleCloseModal()
+      toast.success(editingAuthor ? "Cập nhật tác giả thành công!" : "Thêm tác giả thành công!")
     } catch (err) {
       if (err.response?.data?.errors) {
         setFormErrors(err.response.data.errors)
       } else {
-        setError(editingAuthor ? "Không thể cập nhật tác giả" : "Không thể thêm tác giả")
+        toast.error(editingAuthor ? "Không thể cập nhật tác giả" : "Không thể thêm tác giả")
       }
       console.error("Error saving author:", err)
     } finally {
@@ -93,8 +95,13 @@ const Authors = () => {
     try {
       await authorAPI.delete(id)
       await loadAuthors()
+      toast.success("Xóa tác giả thành công!")
     } catch (err) {
-      setError("Không thể xóa tác giả")
+      if (err.response?.data?.errors && err.response.data.errors.length > 0) {
+        toast.error(err.response.data.errors[0])
+      } else {
+        toast.error("Không thể xóa tác giả")
+      }
       console.error("Error deleting author:", err)
     }
   }

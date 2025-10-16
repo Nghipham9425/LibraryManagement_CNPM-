@@ -26,7 +26,7 @@ builder.Services.AddDbContext<LibraryDbContext>(options =>
 
 // Add services to the container.
 // Learn more about configuring configuring Swagger/OpenAPI at https://aka.ms/aspnet/openapi
-// builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen();
 
 // AutoMapper
 builder.Services.AddAutoMapper(config => config.AddMaps(typeof(Program).Assembly));
@@ -73,11 +73,11 @@ var app = builder.Build();
 app.UseMiddleware<LibraryManagement.API.Middlewares.ErrorHandlingMiddleware>();
 
 // Configure the HTTP request pipeline.
-// if (app.Environment.IsDevelopment())
-// {
-//     app.UseSwagger();
-//     app.UseSwaggerUI();
-// }
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 app.UseCors("AllowReactApp");

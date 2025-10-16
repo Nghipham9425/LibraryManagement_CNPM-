@@ -12,10 +12,7 @@ export const register = async (userData) => {
   return response.data;
 };
 
-export const me = async () => {
-  const response = await axios.get(`${API_BASE_URL}/auth/me`, { withCredentials: true });
-  return response.data;
-};
+
 
 export const logout = async () => {
   const response = await axios.post(`${API_BASE_URL}/auth/logout`, {}, { withCredentials: true });
