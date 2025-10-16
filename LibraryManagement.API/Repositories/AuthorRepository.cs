@@ -23,6 +23,9 @@ namespace LibraryManagement.API.Repositories
             .ToListAsync();
         
         public async Task<Author?> GetByIdAsync(int id) => await _context.Authors.FindAsync(id);
+        public async Task<Author?> GetByIdWithBooksAsync(int id) => await _context.Authors
+            .Include(a => a.BookAuthors)
+            .FirstOrDefaultAsync(a => a.Id == id);
         public async Task<List<Author>> GetByIdsAsync(IEnumerable<int> ids) => await _context.Authors.Where(a => ids.Contains(a.Id)).ToListAsync();
         public async Task AddAsync(Author author)
         {
