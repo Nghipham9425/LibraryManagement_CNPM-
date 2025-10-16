@@ -11,5 +11,6 @@ namespace LibraryManagement.API.Services.Interfaces
         Task AddAuthorAsync(Author author);
         Task UpdateAuthorAsync(Author author);
         Task DeleteAuthorAsync(int id);
+        
     }
 }

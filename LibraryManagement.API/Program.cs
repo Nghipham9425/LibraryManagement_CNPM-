@@ -13,7 +13,7 @@ using LibraryManagement.API.Validators;
 Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Services.AddScoped<IAuthService, AuthService>();
 // Get connection string from env
 var conn = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING") ??
            builder.Configuration.GetConnectionString("DefaultConnection");

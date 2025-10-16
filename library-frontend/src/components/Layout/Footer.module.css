@@ -1,0 +1,29 @@
+/* src/components/Layout/Footer.module.css */
+
+.footer {
+  background-color: #f8f9fa;
+  border-top: 1px solid #e7e7e7;
+  padding: 20px;
+  text-align: center;
+  color: #6c757d;
+  font-size: 14px;
+}
+
+.footerLinks {
+  margin-bottom: 10px;
+}
+
+.link {
+  color: #007bff;
+  text-decoration: none;
+  margin: 0 10px;
+  transition: text-decoration 0.2s;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.copyright {
+  margin-top: 10px;
+}

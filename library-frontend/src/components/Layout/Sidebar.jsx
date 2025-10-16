@@ -4,12 +4,12 @@ import { FaHome, FaBook, FaUsers, FaExchangeAlt, FaTags } from "react-icons/fa"
 
 const Sidebar = () => {
   const menuItems = [
-    { path: "/", label: "Tổng quan", icon: FaHome },
-    { path: "/books", label: "Sách", icon: FaBook },
-    { path: "/authors", label: "Tác giả", icon: FaUsers },
-    { path: "/genres", label: "Thể loại", icon: FaTags },
-    { path: "/borrowing", label: "Mượn trả", icon: FaExchangeAlt },
-    { path: "/members", label: "Thành viên", icon: FaUsers },
+     { path: "/admin", label: "Tổng quan", icon: FaHome },
+    { path: "/admin/books", label: "Sách", icon: FaBook },
+    { path: "/admin/authors", label: "Tác giả", icon: FaUsers },
+    { path: "/admin/genres", label: "Thể loại", icon: FaTags },
+    { path: "/admin/borrowing", label: "Mượn trả", icon: FaExchangeAlt },
+    { path: "/admin/members", label: "Thành viên", icon: FaUsers },
   ]
 
   return (

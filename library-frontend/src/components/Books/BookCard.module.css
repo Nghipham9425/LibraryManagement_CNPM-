@@ -1,0 +1,47 @@
+/* src/components/Books/BookCard.module.css */
+
+.bookCard {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Đảm bảo ảnh bo góc theo card */
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.bookCard:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.coverImage {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3; /* Giữ tỉ lệ ảnh bìa sách thống nhất */
+  object-fit: cover; /* Đảm bảo ảnh lấp đầy khung mà không bị méo */
+}
+
+.bookInfo {
+  padding: 1rem;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0 0 5px 0;
+  /* Giới hạn 2 dòng chữ cho tên sách */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+    line-clamp: 2;
+  -webkit-box-orient: vertical;  
+  overflow: hidden;
+}
+
+.author {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+}

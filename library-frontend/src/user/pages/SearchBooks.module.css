@@ -1,0 +1,95 @@
+/* src/user/pages/SearchBooks.module.css */
+
+.searchContainer {
+  max-width: 800px;
+  margin: 50px auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.title {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.searchBar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 2rem;
+}
+
+.searchInput {
+  flex-grow: 1;
+  padding: 15px;
+  font-size: 18px;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.searchInput:focus {
+  border-color: #007bff;
+}
+
+.searchButton {
+  padding: 15px 30px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.searchButton:hover {
+  background-color: #0056b3;
+}
+
+.searchButton:disabled {
+  background-color: #a0cffc;
+  cursor: not-allowed;
+}
+
+.resultsContainer {
+  margin-top: 2rem;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  min-height: 200px;
+  text-align: left;
+  color: #555;
+}
+
+.resultsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.resultItem {
+  padding: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.resultItem:last-child {
+  border-bottom: none;
+}
+
+.resultItem a {
+  text-decoration: none;
+  color: #0056b3;
+  font-size: 1.1rem;
+  display: block;
+}
+
+.resultItem a:hover {
+  text-decoration: underline;
+}
+
+.resultItem span {
+  color: #666;
+  font-size: 1rem;
+}

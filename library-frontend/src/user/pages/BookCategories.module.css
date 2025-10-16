@@ -1,0 +1,37 @@
+/* src/user/pages/BookCategories.module.css */
+
+.container {
+  max-width: 1100px;
+  margin: 50px auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.title {
+  margin-bottom: 2rem;
+  color: #333;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Lưới tự động co giãn */
+  gap: 20px; /* Khoảng cách giữa các card */
+}
+
+.card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 2rem 1rem;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-size: 1.2rem;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-5px); /* Hiệu ứng nhấc lên khi di chuột */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  color: #007bff;
+}

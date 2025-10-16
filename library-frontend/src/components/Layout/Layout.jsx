@@ -1,10 +1,13 @@
+// src/components/Layout/Layout.jsx
+
 import { Container, Row, Col } from "react-bootstrap"
 import { Outlet } from "react-router-dom"
-import Header from "./Header"
+import Header from "./Header" // Giả sử đây là Header của admin
 import Sidebar from "./Sidebar"
 import Footer from "./Footer"
+import styles from './Layout.module.css'; // Import file CSS module
 
-const Layout = () => {
+const AdminLayout = () => { // Đổi tên thành AdminLayout cho nhất quán
   return (
     <div
       className="d-flex flex-column min-vh-100"
@@ -13,10 +16,11 @@ const Layout = () => {
       <Header />
       <Container fluid className="flex-grow-1 p-0">
         <Row className="g-0 h-100">
-          <Col xs="auto" className="sidebar-col">
+          <Col xs="auto" className={styles.sidebarCol}>
             <Sidebar />
           </Col>
-          <Col className="d-flex flex-column main-content">
+          
+          <Col className={`d-flex flex-column ${styles.mainContent}`}>
             <main className="flex-grow-1 p-4">
               <Outlet />
             </main>
@@ -24,19 +28,8 @@ const Layout = () => {
           </Col>
         </Row>
       </Container>
-      <style jsx>{`
-        .sidebar-col {
-          position: sticky;
-          top: 0;
-          height: calc(100vh - 56px);
-          overflow-y: auto;
-        }
-        .main-content {
-          min-height: calc(100vh - 56px);
-        }
-      `}</style>
     </div>
   )
 }
 
-export default Layout
+export default AdminLayout;

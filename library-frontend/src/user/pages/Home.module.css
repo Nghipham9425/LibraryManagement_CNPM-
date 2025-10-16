@@ -1,0 +1,66 @@
+/* src/user/pages/Home.module.css */
+
+.homeContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.welcomeTitle {
+  text-align: center;
+  color: #333;
+  margin-bottom: 2rem;
+}
+
+/* ===== CSS CHO THANH MENU ===== */
+.navbar {
+  background-color: #ffffff;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e7e7e7;
+  border-radius: 8px;
+  margin-bottom: 3rem;
+}
+
+.navList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+}
+
+.navLink {
+  color: #333;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.navLink:hover {
+  background-color: #007bff;
+  color: #ffffff;
+}
+
+/* ===== CSS CHO SÁCH NỔI BẬT ===== */
+.featuredSection {
+  margin-top: 3rem;
+}
+
+.sectionTitle {
+  font-size: 1.8rem;
+  color: #444;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 10px;
+  margin-bottom: 2rem;
+}
+
+.bookList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 25px;
+}

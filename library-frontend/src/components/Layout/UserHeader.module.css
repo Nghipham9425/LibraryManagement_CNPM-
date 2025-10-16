@@ -1,0 +1,15 @@
+/* src/components/Layout/UserHeader.module.css */
+.header {
+  background-color: #007bff;
+  color: white;
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+}
+.logo { color: white; text-decoration: none; font-weight: bold; }
+.userActions { display: flex; align-items: center; gap: 20px; }
+.welcomeText { font-weight: 500; }
+.navLink { color: white; text-decoration: none; }
+.logoutButton { background-color: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; }

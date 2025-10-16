@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using FluentValidation;
-
+using LibraryManagement.API.Dtos;
 namespace LibraryManagement.API.Controllers
 {
     [ApiController]
@@ -41,7 +41,8 @@ namespace LibraryManagement.API.Controllers
                 {
                     errors.Add(error.ErrorMessage);
                 }
-                return BadRequest(new {
+                return BadRequest(new
+                {
                     message = "Dữ liệu không hợp lệ",
                     errors = errors.ToArray()
                 });
@@ -62,7 +63,8 @@ namespace LibraryManagement.API.Controllers
                 {
                     errors.Add(error.ErrorMessage);
                 }
-                return BadRequest(new {
+                return BadRequest(new
+                {
                     message = "Dữ liệu không hợp lệ",
                     errors = errors.ToArray()
                 });
@@ -78,4 +80,5 @@ namespace LibraryManagement.API.Controllers
             return NoContent();
         }
     }
+    
 }

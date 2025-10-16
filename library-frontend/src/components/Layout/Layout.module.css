@@ -1,0 +1,14 @@
+/* src/components/Layout/Layout.module.css */
+
+.sidebarCol {
+  position: sticky;
+  top: 0;
+  /* Giả sử Header cao 60px, bạn có thể điều chỉnh lại cho phù hợp */
+  height: calc(100vh - 60px); 
+  overflow-y: auto;
+  background-color: #fff; /* Thêm màu nền cho sidebar */
+}
+
+.mainContent {
+  min-height: calc(100vh - 60px);
+}
