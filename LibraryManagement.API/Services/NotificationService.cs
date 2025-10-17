@@ -1,6 +1,5 @@
 using LibraryManagement.API.Data;
 using LibraryManagement.API.Models;
-using LibraryManagement.API.Models.Entity;
 using LibraryManagement.API.DTOs;
 using Microsoft.EntityFrameworkCore;
 

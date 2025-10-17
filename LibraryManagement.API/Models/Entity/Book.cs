@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace LibraryManagement.API.Models
 {
     public class Book
@@ -6,7 +8,6 @@ namespace LibraryManagement.API.Models
         public string Title { get; set; } = null!;
         
         public string? Isbn { get; set; }
-        public string Genre { get; set; } = string.Empty; 
         public int? PublicationYear { get; set; }
         public string Publisher { get; set; } = string.Empty; 
         
@@ -18,5 +19,8 @@ namespace LibraryManagement.API.Models
 
         // Quan hệ nhiều-nhiều với Author thông qua BookAuthor
         public ICollection<BookAuthor> BookAuthors { get; set; } = new List<BookAuthor>();
+
+        // Quan hệ nhiều-nhiều với Genre thông qua BookGenre
+        public ICollection<BookGenre> BookGenres { get; set; } = new List<BookGenre>();
     }
 }

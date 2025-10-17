@@ -146,7 +146,10 @@ namespace LibraryManagement.API.Services
                         Id = b.BookItem.Book.Id,
                         Title = b.BookItem.Book.Title,
                         ImageUrl = b.BookItem.Book.ImageUrl,
-                        Genre = b.BookItem.Book.Genre,
+                        Genres = b.BookItem.Book.BookGenres?
+                            .Select(bg => bg.Genre?.Name ?? "")
+                            .Where(name => !string.IsNullOrEmpty(name))
+                            .ToList() ?? new List<string>(),
                         PublicationYear = b.BookItem.Book.PublicationYear,
                         Publisher = b.BookItem.Book.Publisher,
                         Authors = b.BookItem.Book.BookAuthors?

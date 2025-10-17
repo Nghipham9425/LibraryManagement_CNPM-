@@ -5,7 +5,7 @@ namespace LibraryManagement.API.Models
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? Isbn { get; set; }
-        public string? Genre { get; set; }
+        public List<string> Genres { get; set; } = new List<string>();
         public int? PublicationYear { get; set; }
         public string? Publisher { get; set; }
         public string? ImageUrl { get; set; }

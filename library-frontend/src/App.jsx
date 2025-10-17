@@ -13,6 +13,7 @@ import Home from "./pages/user/Home/Home"
 import Login from "./pages/user/Auth/Login"
 import Register from "./pages/user/Auth/Register"
 import LibraryInfo from "./pages/user/LibraryInfo/LibraryInfo"
+import Library3D from "./pages/user/Library3D/Library3D"
 import "react-toastify/dist/ReactToastify.css"
 import "./App.css"
 
@@ -25,6 +26,7 @@ function App() {
           <Route index element={<Home />} />
           <Route path="library-info" element={<LibraryInfo />} />
         </Route>
+        <Route path="/library-3d" element={<Library3D />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 

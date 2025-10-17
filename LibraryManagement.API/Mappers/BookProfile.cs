@@ -9,6 +9,11 @@ namespace LibraryManagement.API.Mappers
         {
             // Entity to DTO mappings
             CreateMap<Book, BookDto>()
+                .ForMember(dest => dest.Genres, opt => opt.MapFrom(src =>
+                    src.BookGenres != null
+                        ? src.BookGenres.Where(bg => bg.Genre != null).Select(bg => bg.Genre!.Name).ToList()
+                        : new List<string>()
+                ))
                 .ForMember(dest => dest.BookAuthors, opt => opt.MapFrom(src =>
                     src.BookAuthors != null
                         ? src.BookAuthors.Select(ba => new BookAuthorDto
@@ -25,7 +30,11 @@ namespace LibraryManagement.API.Mappers
 
             // DTO to Entity mappings
             CreateMap<BookInputDto, Book>()
-                .ForMember(dest => dest.Genre, opt => opt.MapFrom(src => src.Genre ?? ""))
+                .ForMember(dest => dest.BookGenres, opt => opt.MapFrom(src =>
+                    src.GenreIds != null
+                        ? src.GenreIds.Select(id => new BookGenre { GenreId = id }).ToList()
+                        : new List<BookGenre>()
+                ))
                 .ForMember(dest => dest.Publisher, opt => opt.MapFrom(src => src.Publisher ?? ""))
                 .ForMember(dest => dest.BookAuthors, opt => opt.MapFrom(src =>
                     src.AuthorIds != null

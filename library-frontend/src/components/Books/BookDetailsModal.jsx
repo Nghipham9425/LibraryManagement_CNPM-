@@ -38,13 +38,15 @@ const BookDetailsModal = ({ show, onHide, book }) => {
               <strong className="text-muted">Tác Giả:</strong>
               <p className="mb-0">{book.bookAuthors ? book.bookAuthors.map(ba => ba.authorName).filter(name => name).join(', ') : 'Không có thông tin'}</p>
             </div>
-            {book.genre && (
+            {book.genres && book.genres.length > 0 && (
               <div className="mb-3">
                 <strong className="text-muted">Thể Loại:</strong>
                 <div>
-                  <Badge bg="primary" className="me-2">
-                    {book.genre}
-                  </Badge>
+                  {book.genres.map((genre, index) => (
+                    <Badge key={index} bg="primary" className="me-2 mb-1">
+                      {genre}
+                    </Badge>
+                  ))}
                 </div>
               </div>
             )}

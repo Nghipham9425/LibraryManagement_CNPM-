@@ -1,4 +1,4 @@
-namespace LibraryManagement.API.Models.Entity
+namespace LibraryManagement.API.Models
 {
     public enum NotificationType
     {

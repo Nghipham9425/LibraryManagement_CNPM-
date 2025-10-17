@@ -144,7 +144,6 @@ namespace LibraryManagement.API.Services
             if (httpContext != null)
             {
                 httpContext.Response.Cookies.Delete("accessToken");
-
             }
         }
     }

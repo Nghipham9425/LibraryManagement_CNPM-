@@ -15,9 +15,6 @@ namespace LibraryManagement.API.Validators
             RuleFor(book => book.Isbn)
                 .MaximumLength(20).WithMessage("ISBN không được vượt quá 20 ký tự.");
 
-            RuleFor(book => book.Genre)
-                .MaximumLength(100).WithMessage("Thể loại không được vượt quá 100 ký tự.");
-
             RuleFor(book => book.PublicationYear)
                 .InclusiveBetween(1300, 2100).WithMessage("Năm xuất bản phải từ 1300 đến 2100.")
                 .When(book => book.PublicationYear.HasValue);

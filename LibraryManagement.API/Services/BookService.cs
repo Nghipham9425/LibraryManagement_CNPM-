@@ -70,7 +70,7 @@ namespace LibraryManagement.API.Services
             }
             if (!string.IsNullOrEmpty(genre))
             {
-                query = query.Where(b => b.Genre.Contains(genre, StringComparison.OrdinalIgnoreCase));
+                query = query.Where(b => b.BookGenres.Any(bg => bg.Genre != null && bg.Genre.Name.Contains(genre, StringComparison.OrdinalIgnoreCase)));
             }
             return query.ToList();
         }

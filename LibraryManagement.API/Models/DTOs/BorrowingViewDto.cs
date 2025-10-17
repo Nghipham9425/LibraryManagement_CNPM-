@@ -33,7 +33,7 @@ namespace LibraryManagement.API.DTOs
         public int Id { get; set; }
         public string Title { get; set; } = string.Empty;
         public string? ImageUrl { get; set; }
-        public string Genre { get; set; } = string.Empty;
+        public List<string> Genres { get; set; } = new();
         public int? PublicationYear { get; set; }
         public string Publisher { get; set; } = string.Empty;
         public List<string> Authors { get; set; } = new();
