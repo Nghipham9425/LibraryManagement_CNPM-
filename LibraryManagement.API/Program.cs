@@ -41,6 +41,8 @@ builder.Services.AddScoped<BookRepository>();
 builder.Services.AddScoped<BookService>();
 builder.Services.AddScoped<AuthorRepository>();
 builder.Services.AddScoped<AuthorService>();
+builder.Services.AddScoped<GenreRepository>();
+builder.Services.AddScoped<GenreService>();
 builder.Services.AddScoped<AuthRepository>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<BorrowingRepository>();

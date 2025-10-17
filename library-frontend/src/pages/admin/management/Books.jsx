@@ -2,7 +2,7 @@ import { useState, useEffect } from "react"
 import { Card, Button, Container, Spinner } from "react-bootstrap"
 import { FaPlus, FaBook } from "react-icons/fa"
 import { toast } from "react-toastify"
-import { bookAPI, authorAPI } from "../../../apis"
+import { bookAPI, authorAPI, genreAPI } from "../../../apis"
 import BookGrid from "../../../components/Books/BookGrid"
 import BookFormModal from "../../../components/Books/BookFormModal"
 import BookDetailsModal from "../../../components/Books/BookDetailsModal"
@@ -18,6 +18,7 @@ const Books = () => {
   }
   const [books, setBooks] = useState([])
   const [authors, setAuthors] = useState([])
+  const [genres, setGenres] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editingBook, setEditingBook] = useState(null)
@@ -25,7 +26,7 @@ const Books = () => {
     title: "",
     authorIds: [],
     isbn: "",
-    genre: "",
+    genreId: "",
     publicationYear: "",
     publisher: "",
     imageUrl: "",
@@ -38,6 +39,7 @@ const Books = () => {
   useEffect(() => {
     fetchBooks()
     fetchAuthors()
+    fetchGenres()
   }, [])
 
   const fetchBooks = async () => {
@@ -58,6 +60,15 @@ const Books = () => {
       setAuthors(data)
     } catch {
       toast.error("Lỗi khi tải danh sách tác giả")
+    }
+  }
+
+  const fetchGenres = async () => {
+    try {
+      const data = await genreAPI.getAll()
+      setGenres(data)
+    } catch {
+      toast.error("Lỗi khi tải danh sách thể loại")
     }
   }
 
@@ -92,7 +103,7 @@ const Books = () => {
       title: book.title,
       authorIds: book.bookAuthors ? book.bookAuthors.map(ba => ba.authorId) : [],
       isbn: book.isbn || "",
-      genre: book.genre || "",
+      genreIds: book.genres ? genres.filter(g => book.genres.includes(g.name)).map(g => g.id) : [],
       publicationYear: book.publicationYear || "",
       publisher: book.publisher || "",
       imageUrl: book.imageUrl || "",
@@ -123,7 +134,7 @@ const Books = () => {
       title: "",
       authorIds: [],
       isbn: "",
-      genre: "",
+      genreIds: [],
       publicationYear: "",
       publisher: "",
       imageUrl: "",
@@ -204,6 +215,7 @@ const Books = () => {
         setFormData={setFormData}
         onSubmit={handleSubmit}
         authors={authors}
+        genres={genres}
       />
 
       <BookDetailsModal

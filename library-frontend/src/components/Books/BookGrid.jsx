@@ -10,10 +10,19 @@ const BookGrid = ({ books, onEdit, onDelete, onViewDetails }) => {
           <Card className="h-100 shadow-sm book-card">
             <div className="book-card-image-wrap">
               <div className="book-card-topbar">
-                {book.genre && (
-                  <Badge bg="light" className="book-card-genre">
-                    {book.genre}
-                  </Badge>
+                {book.genres && book.genres.length > 0 && (
+                  <div className="book-card-genres">
+                    {book.genres.slice(0, 2).map((genre, index) => (
+                      <Badge key={index} bg="light" className="book-card-genre me-1">
+                        {genre}
+                      </Badge>
+                    ))}
+                    {book.genres.length > 2 && (
+                      <Badge bg="light" className="book-card-genre">
+                        +{book.genres.length - 2}
+                      </Badge>
+                    )}
+                  </div>
                 )}
                 <Dropdown className="book-card-dropdown">
                   <Dropdown.Toggle

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button, Spinner } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import { FaBook, FaUsers, FaClipboardList, FaChartLine } from 'react-icons/fa';
+import { FaBook, FaUsers, FaClipboardList, FaChartLine, FaCube } from 'react-icons/fa';
 import HeroBanner from '../../../components/Home/HeroBanner';
 import TrendingBooks from '../../../components/Home/TrendingBooks';
 import FeaturedCategories from '../../../components/Home/FeaturedCategories';
@@ -48,8 +48,8 @@ function Home() {
       {/* Features Section */}
       <section className="py-5 bg-white">
         <Container>
-          <Row className="g-4">
-            <Col lg={3} md={6}>
+          <Row className="g-4 justify-content-center">
+            <Col lg={2} md={4} sm={6} xs={12}>
               <Card className="border-0 shadow-sm text-center h-100 feature-card">
                 <Card.Body className="p-4">
                   <div className="feature-icon bg-primary bg-opacity-10 text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '70px', height: '70px' }}>
@@ -62,7 +62,7 @@ function Home() {
                 </Card.Body>
               </Card>
             </Col>
-            <Col lg={3} md={6}>
+            <Col lg={2} md={4} sm={6} xs={12}>
               <Card className="border-0 shadow-sm text-center h-100 feature-card">
                 <Card.Body className="p-4">
                   <div className="feature-icon bg-success bg-opacity-10 text-success rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '70px', height: '70px' }}>
@@ -75,7 +75,7 @@ function Home() {
                 </Card.Body>
               </Card>
             </Col>
-            <Col lg={3} md={6}>
+            <Col lg={2} md={4} sm={6} xs={12}>
               <Card className="border-0 shadow-sm text-center h-100 feature-card">
                 <Card.Body className="p-4">
                   <div className="feature-icon bg-warning bg-opacity-10 text-warning rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '70px', height: '70px' }}>
@@ -88,7 +88,7 @@ function Home() {
                 </Card.Body>
               </Card>
             </Col>
-            <Col lg={3} md={6}>
+            <Col lg={2} md={4} sm={6} xs={12}>
               <Card className="border-0 shadow-sm text-center h-100 feature-card">
                 <Card.Body className="p-4">
                   <div className="feature-icon bg-info bg-opacity-10 text-info rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '70px', height: '70px' }}>
@@ -100,6 +100,21 @@ function Home() {
                   </p>
                 </Card.Body>
               </Card>
+            </Col>
+            <Col lg={2} md={4} sm={6} xs={12}>
+              <Link to="/library-3d" className="text-decoration-none">
+                <Card className="border-0 shadow-sm text-center h-100 feature-card">
+                  <Card.Body className="p-4">
+                    <div className="feature-icon bg-secondary bg-opacity-10 text-secondary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style={{ width: '70px', height: '70px' }}>
+                      <FaCube className="fs-3" />
+                    </div>
+                    <h5 className="fw-bold mb-2">Thư Viện 3D</h5>
+                    <p className="text-muted small mb-0">
+                      Trải nghiệm thư viện với công nghệ 3D hiện đại
+                    </p>
+                  </Card.Body>
+                </Card>
+              </Link>
             </Col>
           </Row>
         </Container>

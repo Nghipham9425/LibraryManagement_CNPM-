@@ -18,13 +18,14 @@ const BookFormModal = ({
   setFormData,
   onSubmit,
   authors = [],
+  genres = [],
 }) => {
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData({ ...formData, [name]: value })
   }
 
-  const handleAuthorChange = (selectedAuthorIds) => {
+    const handleAuthorChange = (selectedAuthorIds) => {
     setFormData({ ...formData, authorIds: selectedAuthorIds })
   }
 
@@ -37,7 +38,21 @@ const BookFormModal = ({
     }
   }
 
+  const handleGenreChange = (selectedGenreIds) => {
+    setFormData({ ...formData, genreIds: selectedGenreIds })
+  }
+
+  const toggleGenre = (genreId) => {
+    const currentIds = formData.genreIds || []
+    if (currentIds.includes(genreId)) {
+      handleGenreChange(currentIds.filter(id => id !== genreId))
+    } else {
+      handleGenreChange([...currentIds, genreId])
+    }
+  }
+
   const selectedAuthors = authors.filter(author => formData.authorIds?.includes(author.id))
+  const selectedGenres = genres.filter(genre => formData.genreIds?.includes(genre.id))
 
   return (
     <Modal show={show} onHide={onHide} size="lg" centered>
@@ -53,6 +68,11 @@ const BookFormModal = ({
           // Validate authors
           if (!formData.authorIds || formData.authorIds.length === 0) {
             toast.error("Vui lòng chọn ít nhất một tác giả")
+            return
+          }
+          // Validate genres
+          if (!formData.genreIds || formData.genreIds.length === 0) {
+            toast.error("Vui lòng chọn ít nhất một thể loại")
             return
           }
           onSubmit(formData)
@@ -144,16 +164,40 @@ const BookFormModal = ({
                   <Form.Group className="mb-3">
                     <Form.Label className="d-flex align-items-center">
                       <FaTag className="me-2 text-primary" />
-                      Thể Loại
+                      Thể Loại *
                     </Form.Label>
-                    <Form.Control
-                      type="text"
-                      name="genre"
-                      value={formData.genre}
-                      onChange={handleChange}
-                      maxLength="100"
-                      placeholder="Nhập thể loại"
-                    />
+                    <div className="border rounded p-2" style={{ minHeight: '120px', maxHeight: '200px', overflowY: 'auto' }}>
+                      {genres.length === 0 ? (
+                        <div className="text-muted text-center py-3">
+                          <small>Chưa có thể loại nào. Vui lòng thêm thể loại trước.</small>
+                        </div>
+                      ) : (
+                        genres.map((genre) => (
+                          <Form.Check
+                            key={genre.id}
+                            type="checkbox"
+                            id={`genre-${genre.id}`}
+                            label={genre.name}
+                            checked={formData.genreIds?.includes(genre.id) || false}
+                            onChange={() => toggleGenre(genre.id)}
+                            className="mb-2"
+                          />
+                        ))
+                      )}
+                    </div>
+                    {selectedGenres.length > 0 && (
+                      <div className="mt-2">
+                        <small className="text-muted">Đã chọn: </small>
+                        {selectedGenres.map((genre) => (
+                          <Badge key={genre.id} bg="secondary" className="me-1 mb-1">
+                            {genre.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    )}
+                    <Form.Control.Feedback type="invalid">
+                      Vui lòng chọn ít nhất một thể loại.
+                    </Form.Control.Feedback>
                   </Form.Group>
                 </Col>
               </Row>

@@ -1,7 +1,7 @@
 import React, { useState } from "react"
 import { Container, Row, Col, Nav, Button, Form } from "react-bootstrap"
 import { Link, useNavigate } from "react-router-dom"
-import { FaBook, FaSearch, FaUser,FaBookOpen } from "react-icons/fa"
+import { FaBook, FaSearch, FaUser, FaBookOpen, FaCube } from "react-icons/fa"
 
 const UserHeader = () => {
   const [searchQuery, setSearchQuery] = useState("")
@@ -103,6 +103,9 @@ const UserHeader = () => {
             </Nav.Link>
             <Nav.Link as={Link} to="/authors" className="px-3 fw-semibold text-dark">
               Tác giả
+            </Nav.Link>
+            <Nav.Link as={Link} to="/library-3d" className="px-3 fw-semibold text-primary">
+              <FaCube className="me-1" /> Thư Viện 3D
             </Nav.Link>
             <Nav.Link as={Link} to="/library-info" className="px-3 fw-semibold text-dark">
               Thông tin thư viện

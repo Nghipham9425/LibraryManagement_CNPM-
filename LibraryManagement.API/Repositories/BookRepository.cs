@@ -19,10 +19,14 @@ namespace LibraryManagement.API.Repositories
         public async Task<List<Book>> GetAllAsync() => await _context.Books
             .Include(b => b.BookAuthors)
             .ThenInclude(ba => ba.Author)
+            .Include(b => b.BookGenres)
+            .ThenInclude(bg => bg.Genre)
             .ToListAsync();
         public async Task<Book?> GetByIdAsync(int id) => await _context.Books
             .Include(b => b.BookAuthors)
             .ThenInclude(ba => ba.Author)
+            .Include(b => b.BookGenres)
+            .ThenInclude(bg => bg.Genre)
             .FirstOrDefaultAsync(b => b.Id == id);
         public async Task AddAsync(Book book)
         {
@@ -33,6 +37,7 @@ namespace LibraryManagement.API.Repositories
         {
             var existingBook = await _context.Books
                 .Include(b => b.BookAuthors)
+                .Include(b => b.BookGenres)
                 .FirstOrDefaultAsync(b => b.Id == book.Id);
             if (existingBook == null)
             {
@@ -42,7 +47,6 @@ namespace LibraryManagement.API.Repositories
             // Update basic properties
             existingBook.Title = book.Title;
             existingBook.Isbn = book.Isbn;
-            existingBook.Genre = book.Genre;
             existingBook.PublicationYear = book.PublicationYear;
             existingBook.Publisher = book.Publisher;
             existingBook.ImageUrl = book.ImageUrl;
@@ -58,6 +62,19 @@ namespace LibraryManagement.API.Repositories
                 {
                     BookId = book.Id,
                     AuthorId = bookAuthor.AuthorId
+                });
+            }
+
+            // Remove existing BookGenre relationships
+            _context.BookGenres.RemoveRange(existingBook.BookGenres);
+
+            // Add new BookGenre relationships
+            foreach (var bookGenre in book.BookGenres)
+            {
+                _context.BookGenres.Add(new BookGenre
+                {
+                    BookId = book.Id,
+                    GenreId = bookGenre.GenreId
                 });
             }
 
