@@ -1,13 +1,13 @@
 import React from 'react';
 import { Container } from 'react-bootstrap';
 
-const Authors = () => {
+const Contact = () => {
   return (
     <Container className="py-5 text-center">
-      <h1>Đây là trang Tác Giả</h1>
-      <p>Trang tác giả cơ bản.</p>
+      <h1>Đây là trang Liên Hệ</h1>
+      <p>Trang liên hệ cơ bản.</p>
     </Container>
   );
 };
 
-export default Authors;
+export default Contact;

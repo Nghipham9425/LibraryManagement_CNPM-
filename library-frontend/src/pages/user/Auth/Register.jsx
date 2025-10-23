@@ -9,7 +9,8 @@ const Register = () => {
     username: '',
     email: '',
     password: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    fullName: ''
   });
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -27,7 +28,7 @@ const Register = () => {
       return;
     }
     try {
-      await register(formData);
+      await register({ ...formData, role: 'Reader' });
       navigate('/login');
     } catch {
       setError('Đăng ký thất bại');
@@ -94,6 +95,18 @@ const Register = () => {
                       onChange={handleChange}
                       required
                       placeholder="Nhập email"
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Label>Họ tên</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="fullName"
+                      value={formData.fullName}
+                      onChange={handleChange}
+                      required
+                      placeholder="Nhập họ tên"
                     />
                   </Form.Group>
 

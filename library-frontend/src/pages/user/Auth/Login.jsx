@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import { login } from "../../../apis/auth";
+import { useAuth } from '@/contexts/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const Login = () => {
@@ -9,21 +10,26 @@ const Login = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { login: setUser } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
-   e.preventDefault();
-     try {
-       const data = await login(formData);
-       localStorage.setItem('refreshToken', data.refreshToken);
-       navigate('/dashboard');
-     } catch {
-       setError('Đăng nhập thất bại');
-     }
-   };
+    e.preventDefault();
+    try {
+      const response = await login(formData);
+      setUser(response.user);
+      if (response.user.role === 'Admin') {
+        navigate('/admin');
+      } else {
+        navigate('/');
+      }
+    } catch {
+      setError('Đăng nhập thất bại');
+    }
+  };
 
   return (
     <div style={{

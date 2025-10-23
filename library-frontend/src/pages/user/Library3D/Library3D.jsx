@@ -1,9 +1,10 @@
+
 import { useState, useEffect, Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Container, Form, Button, Spinner, InputGroup, Badge } from 'react-bootstrap'
 import { FaSearch, FaRedo, FaCube } from 'react-icons/fa'
 import { toast } from 'react-toastify'
-import { bookAPI } from '../../../apis'
+import { bookAPI, genreAPI } from '../../../apis'
 import BooksScene from '../../../components/Library3D/BooksScene'
 import BookInfoPanel from '../../../components/Library3D/BookInfoPanel'
 
@@ -18,30 +19,10 @@ const Library3D = () => {
 
   useEffect(() => {
     fetchBooks()
+    fetchGenres()
   }, [])
 
   useEffect(() => {
-    filterBooks()
-  }, [books, searchTerm, selectedGenre])
-
-  const fetchBooks = async () => {
-    try {
-      setLoading(true)
-      const data = await bookAPI.getAll()
-      setBooks(data)
-
-      // Extract unique genres
-      const uniqueGenres = [...new Set(data.map((book) => book.genre).filter(Boolean))]
-      setGenres(uniqueGenres)
-    } catch (error) {
-      toast.error('Lỗi khi tải danh sách sách')
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const filterBooks = () => {
     let filtered = books
 
     // Filter by search term
@@ -58,10 +39,36 @@ const Library3D = () => {
 
     // Filter by genre
     if (selectedGenre !== 'all') {
-      filtered = filtered.filter((book) => book.genre === selectedGenre)
+      filtered = filtered.filter((book) => {
+        if (!book.genres) return false
+        return book.genres.some((genre) => genre.name === selectedGenre)
+      })
     }
 
     setFilteredBooks(filtered)
+  }, [books, searchTerm, selectedGenre])
+
+  const fetchBooks = async () => {
+    try {
+      setLoading(true)
+      const data = await bookAPI.getAll()
+      setBooks(data)
+    } catch (error) {
+      toast.error('Lỗi khi tải danh sách sách')
+      console.error(error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchGenres = async () => {
+    try {
+      const data = await genreAPI.getAll()
+      setGenres(data)
+    } catch (error) {
+      toast.error('Lỗi khi tải danh sách thể loại')
+      console.error(error)
+    }
   }
 
   const handleReset = () => {
@@ -132,8 +139,8 @@ const Library3D = () => {
           >
             <option value="all">Tất Cả</option>
             {genres.map((genre) => (
-              <option key={genre} value={genre}>
-                {genre}
+              <option key={genre.id} value={genre.name}>
+                {genre.name}
               </option>
             ))}
           </Form.Select>
@@ -174,7 +181,7 @@ const Library3D = () => {
       {/* 3D Canvas */}
       <Canvas
         camera={{ position: [0, 5, 15], fov: 60 }}
-        style={{ background: 'linear-gradient(to bottom, #0a0e27, #1a1a2e)' }}
+        style={{ background: 'linear-gradient(135deg, #f5ebe0, #f0e6d2)' }}
       >
         <Suspense fallback={null}>
           <BooksScene

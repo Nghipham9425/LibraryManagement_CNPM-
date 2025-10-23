@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import { login } from '@/apis/auth';
+import { useAuth } from '@/contexts/AuthContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 const AdminLogin = () => {
@@ -9,6 +10,7 @@ const AdminLogin = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { login: setUser } = useAuth();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,7 +19,8 @@ const AdminLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await login(formData);
+      const response = await login(formData);
+      setUser(response.user);
       navigate('/admin');
     } catch {
       setError('Đăng nhập thất bại');

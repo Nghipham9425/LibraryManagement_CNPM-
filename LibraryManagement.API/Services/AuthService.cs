@@ -1,12 +1,7 @@
 using LibraryManagement.API.Data;
 using LibraryManagement.API.Models;
 using LibraryManagement.API.Repositories;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 using BCrypt.Net;
-using Microsoft.EntityFrameworkCore;
 using LibraryManagement.API.Utils;
 using Microsoft.AspNetCore.Http;
 
@@ -17,15 +12,17 @@ namespace LibraryManagement.API.Services
         private readonly AuthRepository _authRepository;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly JwtTokenService _jwtTokenService;
 
-        public AuthService(AuthRepository authRepository, IConfiguration config, IHttpContextAccessor httpContextAccessor)
+        public AuthService(AuthRepository authRepository, IConfiguration config, IHttpContextAccessor httpContextAccessor, JwtTokenService jwtTokenService)
         {
             _authRepository = authRepository;
             _config = config;
             _httpContextAccessor = httpContextAccessor;
+            _jwtTokenService = jwtTokenService;
         }
 
-        public async Task Register(string username, string email, string password)
+        public async Task Register(string username, string email, string password, string role = "Reader")
         {
             if (await _authRepository.GetUserByUsernameAsync(username) != null)
                 throw new ApiException(400, "Username already exists");
@@ -38,7 +35,7 @@ namespace LibraryManagement.API.Services
                 UserName = username,
                 Email = email,
                 PasswordHash = BCrypt.Net.BCrypt.HashPassword(password),
-                Role = "Reader",
+                Role = role,
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow
             };
@@ -46,7 +43,7 @@ namespace LibraryManagement.API.Services
             await _authRepository.AddUserAsync(user);
         }
 
-        public async Task Login(string username, string password)
+        public async Task<string> Login(string username, string password)
         {
             var user = await _authRepository.GetUserByUsernameAsync(username);
             if (user == null)
@@ -61,7 +58,7 @@ namespace LibraryManagement.API.Services
             user.LastLoginAt = DateTime.UtcNow;
             await _authRepository.UpdateUserAsync(user);
 
-            var token = GenerateJwtToken(user);
+            var token = _jwtTokenService.GenerateJwtToken(user);
 
             // Set cookies
             var httpContext = _httpContextAccessor.HttpContext;
@@ -76,54 +73,18 @@ namespace LibraryManagement.API.Services
                     Expires = DateTime.UtcNow.AddMinutes(60)
                 });
             }
+
+            return token;
         }
 
         public async Task<string> GenerateRefreshToken(int userId)
         {
-            var refreshToken = new RefreshToken
-            {
-                UserId = userId,
-                Token = Guid.NewGuid().ToString(),
-                Expires = DateTime.UtcNow.AddDays(7),
-                Created = DateTime.UtcNow
-            };
-
-            await _authRepository.AddRefreshTokenAsync(refreshToken);
-
-            return refreshToken.Token;
+            return await _jwtTokenService.GenerateRefreshToken(userId);
         }
 
         public async Task RevokeRefreshToken(string token)
         {
-            var refreshToken = await _authRepository.GetRefreshTokenAsync(token);
-            if (refreshToken != null)
-            {
-                refreshToken.IsRevoked = true;
-                await _authRepository.UpdateRefreshTokenAsync(refreshToken);
-            }
-        }
-
-        private string GenerateJwtToken(User user)
-        {
-            var claims = new[]
-            {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role)
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(int.Parse(_config["Jwt:ExpiryInMinutes"] ?? "60")),
-                signingCredentials: creds);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            await _jwtTokenService.RevokeRefreshToken(token);
         }
 
         public async Task<User?> GetUserByUsernameAsync(string username)
@@ -145,6 +106,11 @@ namespace LibraryManagement.API.Services
             {
                 httpContext.Response.Cookies.Delete("accessToken");
             }
+        }
+
+        public async Task<string> RefreshToken(string refreshToken)
+        {
+            return await _jwtTokenService.RefreshToken(refreshToken);
         }
     }
 }

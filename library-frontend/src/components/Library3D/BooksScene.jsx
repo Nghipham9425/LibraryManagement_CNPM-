@@ -1,35 +1,27 @@
-import { useMemo, useRef } from 'react'
-import { OrbitControls, Stars, Text } from '@react-three/drei'
+
+import { useMemo } from 'react'
+import { Stars, Text, FlyControls } from '@react-three/drei'
 import Book3D from './Book3D'
 import * as THREE from 'three'
 
 const BooksScene = ({ books, onBookClick, selectedBook }) => {
-  const controlsRef = useRef()
 
-  // Arrange books in a 3D circular spiral pattern
+  // Arrange books in a random 3D cloud (spam) style
   const bookPositions = useMemo(() => {
-    const positions = []
-    const radius = 8
-    const heightSpacing = 2
-    const booksPerLevel = 8
-
+    const positions = [];
+    const spread = 30; // how far books can be from center
     books.forEach((book, index) => {
-      const level = Math.floor(index / booksPerLevel)
-      const angleStep = (Math.PI * 2) / booksPerLevel
-      const angle = (index % booksPerLevel) * angleStep
-
-      const x = Math.cos(angle) * (radius + level * 0.5)
-      const y = level * heightSpacing - (books.length / booksPerLevel) * heightSpacing * 0.3
-      const z = Math.sin(angle) * (radius + level * 0.5)
-
+      // Random position in a 3D box
+      const x = (Math.random() - 0.5) * spread;
+      const y = (Math.random() - 0.5) * spread * 0.7;
+      const z = (Math.random() - 0.5) * spread;
       positions.push({
         book,
         position: [x, y, z],
-      })
-    })
-
-    return positions
-  }, [books])
+      });
+    });
+    return positions;
+  }, [books]);
 
   return (
     <>
@@ -68,7 +60,7 @@ const BooksScene = ({ books, onBookClick, selectedBook }) => {
         Thư Viện 3D
       </Text>
 
-      {/* Render all books */}
+      {/* Render all books with floating animation */}
       {bookPositions.map(({ book, position }, index) => (
         <Book3D
           key={book.id || index}
@@ -76,19 +68,12 @@ const BooksScene = ({ books, onBookClick, selectedBook }) => {
           position={position}
           onClick={onBookClick}
           isSelected={selectedBook?.id === book.id}
+          floating
         />
       ))}
 
-      {/* Camera controls */}
-      <OrbitControls
-        ref={controlsRef}
-        enableDamping
-        dampingFactor={0.05}
-        minDistance={5}
-        maxDistance={30}
-        maxPolarAngle={Math.PI / 1.5}
-        minPolarAngle={Math.PI / 6}
-      />
+  {/* Fly controls for WASD/arrow key movement only (no free mouse look) */}
+  <FlyControls movementSpeed={10} rollSpeed={0.5} dragToLook={true} />
     </>
   )
 }
