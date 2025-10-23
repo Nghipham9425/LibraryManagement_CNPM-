@@ -1,9 +1,17 @@
+
 import { Card, Badge, Button } from 'react-bootstrap'
-import { FaTimes, FaBook, FaCalendar, FaBuilding, FaBarcode } from 'react-icons/fa'
+import { FaTimes, FaBook, FaCalendar, FaBuilding, FaBarcode, FaExternalLinkAlt } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 
 const BookInfoPanel = ({ book, onClose }) => {
+  const navigate = useNavigate();
   if (!book) return null
+
+  const handleGoToDetail = () => {
+    navigate(`/books/${book.id}`)
+    onClose && onClose()
+  }
 
   return (
     <AnimatePresence>
@@ -84,7 +92,7 @@ const BookInfoPanel = ({ book, onClose }) => {
                 <strong className="text-muted">Thể Loại</strong>
               </div>
               <Badge bg="primary" className="ms-0">
-                {book.genre}
+                {typeof book.genre === 'string' ? book.genre : book.genre.name}
               </Badge>
             </div>
           )}
@@ -142,6 +150,13 @@ const BookInfoPanel = ({ book, onClose }) => {
               </div>
             </div>
           )}
+
+          {/* Go to detail button */}
+          <div className="d-grid mt-4">
+            <Button variant="outline-primary" onClick={handleGoToDetail}>
+              Xem chi tiết sách <FaExternalLinkAlt className="ms-2" />
+            </Button>
+          </div>
         </div>
       </motion.div>
     </AnimatePresence>

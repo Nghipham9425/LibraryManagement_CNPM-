@@ -1,5 +1,5 @@
 using LibraryManagement.API.Services;
-using LibraryManagement.API.Models.DTOs; 
+using LibraryManagement.API.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using FluentValidation;
 using LibraryManagement.API.Utils;
@@ -14,7 +14,7 @@ namespace LibraryManagement.API.Controllers
     {
         private readonly AuthService _authServices;
         private readonly IValidator<RegisterRequest> _registerValidator;
-        private readonly IValidator<LoginRequest> _loginValidator;  // Thêm validator cho Login
+        private readonly IValidator<LoginRequest> _loginValidator;
 
         public AuthController(AuthService authService, IValidator<RegisterRequest> registerValidator, IValidator<LoginRequest> loginValidator)
         {
@@ -26,11 +26,10 @@ namespace LibraryManagement.API.Controllers
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            //validate ne
             var validateRS = await _registerValidator.ValidateAsync(request);
             if (!validateRS.IsValid)
                 throw new ApiException(400, string.Join(", ", validateRS.Errors.Select(e => e.ErrorMessage)));
-            await _authServices.Register(request.Username, request.Email, request.Password);
+            await _authServices.Register(request.Username, request.Email, request.Password, request.Role);
             return Ok("Registered");
         }
 
@@ -40,8 +39,11 @@ namespace LibraryManagement.API.Controllers
             var validateRS = await _loginValidator.ValidateAsync(request);
             if (!validateRS.IsValid)
                 throw new ApiException(400, string.Join(", ", validateRS.Errors.Select(e => e.ErrorMessage)));
-            await _authServices.Login(request.Username, request.Password);
-            return Ok(new { message = "Login successful" });
+            var token = await _authServices.Login(request.Username, request.Password);
+            var user = await _authServices.GetUserByUsernameAsync(request.Username);
+            if (user == null) throw new ApiException(500, "User not found after login");
+            var refreshToken = await _authServices.GenerateRefreshToken(user.Id);
+            return Ok(new { token, user = new { user.UserName, user.Email, user.Role }, refreshToken, message = "Login successful" });
         }
 
         [HttpPost("logout")]
@@ -62,6 +64,13 @@ namespace LibraryManagement.API.Controllers
             if (user == null) return NotFound();
 
             return Ok(new { user.UserName, user.Email, user.Role });
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshRequest request)
+        {
+            var token = await _authServices.RefreshToken(request.RefreshToken);
+            return Ok(new { token });
         }
     }
 }

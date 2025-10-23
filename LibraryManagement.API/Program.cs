@@ -45,11 +45,16 @@ builder.Services.AddScoped<GenreRepository>();
 builder.Services.AddScoped<GenreService>();
 builder.Services.AddScoped<AuthRepository>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<LibraryManagement.API.Utils.JwtTokenService>();
 builder.Services.AddScoped<BorrowingRepository>();
 builder.Services.AddScoped<BorrowingService>();
 builder.Services.AddScoped<NotificationService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<BookValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<GenreValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<AuthorValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -64,6 +69,17 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnMessageReceived = context =>
+            {
+                if (context.Request.Cookies.ContainsKey("accessToken"))
+                {
+                    context.Token = context.Request.Cookies["accessToken"];
+                }
+                return Task.CompletedTask;
+            }
         };
     });
 builder.Services.AddAuthorization();
