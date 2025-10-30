@@ -1,23 +1,22 @@
-using System.ComponentModel.DataAnnotations; // Thêm dòng này cho [Key]
-using System.ComponentModel.DataAnnotations.Schema; // Cho [ForeignKey]
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LibraryManagement.API.Models
 {
     public class RefreshToken
     {
-        [Key] // Giữ lại cho EF Core
+        [Key]
         public int Id { get; set; }
         
-        public string Token { get; set; } = string.Empty; // Bỏ [Required] và [MaxLength] - dùng validator
+        public string Token { get; set; } = string.Empty;
         
-        public int UserId { get; set; } // Bỏ [Required] - dùng validator
+        public int UserId { get; set; }
         
         public DateTime Expires { get; set; }
         public bool IsRevoked { get; set; } = false;
         public DateTime Created { get; set; } = DateTime.UtcNow;
         
-        // Navigation property
-        [ForeignKey("UserId")] // Giữ lại cho EF Core
+        [ForeignKey("UserId")] 
         public User? User { get; set; }
     }
 }

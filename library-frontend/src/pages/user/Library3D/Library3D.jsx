@@ -1,5 +1,5 @@
 
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, memo, Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Container, Form, Button, Spinner, InputGroup, Badge } from 'react-bootstrap'
 import { FaSearch, FaRedo, FaCube } from 'react-icons/fa'
@@ -8,7 +8,7 @@ import { bookAPI, genreAPI } from '../../../apis'
 import BooksScene from '../../../components/Library3D/BooksScene'
 import BookInfoPanel from '../../../components/Library3D/BookInfoPanel'
 
-const Library3D = () => {
+const Library3D = memo(() => {
   const [books, setBooks] = useState([])
   const [filteredBooks, setFilteredBooks] = useState([])
   const [loading, setLoading] = useState(true)
@@ -22,17 +22,27 @@ const Library3D = () => {
     fetchGenres()
   }, [])
 
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('')
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [searchTerm])
+
   useEffect(() => {
     let filtered = books
 
     // Filter by search term
-    if (searchTerm) {
+    if (debouncedSearchTerm) {
       filtered = filtered.filter(
         (book) =>
-          book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          book.title.toLowerCase().includes(debouncedSearchTerm.toLowerCase()) ||
           (book.bookAuthors &&
             book.bookAuthors.some((ba) =>
-              ba.authorName?.toLowerCase().includes(searchTerm.toLowerCase())
+              ba.authorName?.toLowerCase().includes(debouncedSearchTerm.toLowerCase())
             ))
       )
     }
@@ -46,7 +56,7 @@ const Library3D = () => {
     }
 
     setFilteredBooks(filtered)
-  }, [books, searchTerm, selectedGenre])
+  }, [books, debouncedSearchTerm, selectedGenre])
 
   const fetchBooks = async () => {
     try {
@@ -114,7 +124,6 @@ const Library3D = () => {
       >
         <div className="d-flex align-items-center mb-3">
           <FaCube className="me-2 text-primary" size={24} />
-          <h5 className="mb-0 fw-bold">Thư Viện 3D</h5>
         </div>
 
         {/* Search */}
@@ -216,6 +225,8 @@ const Library3D = () => {
       )}
     </div>
   )
-}
+})
+
+Library3D.displayName = 'Library3D'
 
 export default Library3D
