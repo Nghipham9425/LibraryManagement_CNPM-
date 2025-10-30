@@ -1,4 +1,5 @@
 
+
 import { useMemo } from 'react'
 import { Stars, Text, FlyControls } from '@react-three/drei'
 import Book3D from './Book3D'
@@ -46,20 +47,6 @@ const BooksScene = ({ books, onBookClick, selectedBook }) => {
         fade
         speed={1}
       />
-
-      {/* Center text */}
-      <Text
-        position={[0, 0, 0]}
-        fontSize={1}
-        color="#4fc3f7"
-        anchorX="center"
-        anchorY="middle"
-        outlineWidth={0.1}
-        outlineColor="#000000"
-      >
-        Thư Viện 3D
-      </Text>
-
       {/* Render all books with floating animation */}
       {bookPositions.map(({ book, position }, index) => (
         <Book3D
