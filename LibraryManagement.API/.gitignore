@@ -1,0 +1,129 @@
+# .NET Core
+bin
+obj
+*.user
+*.suo
+*.db
+*.pdb
+*.cache
+*.log
+*.sln.docstates
+
+# .NET Core Debug/Release folders
+**/Debug/
+**/Release/
+**/x64/
+**/x86/
+
+# IDE settings
+.idea/
+.vscode/
+*.iml
+*.swp
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+*~
+
+# Database
+*.sqlite
+*.db
+*.db-shm
+*.db-wal
+
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+*.pid
+*.seed
+logs/
+temp/
+
+# Environment files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Test results
+TestResults/
+*.trx
+*.testsettings
+
+# Rider
+.idea/
+*.sln.iml
+
+# NuGet packages
+*.nupkg
+.nuget/
+
+# JetBrains Rider
+.idea/workspace.xml
+.idea/tasks.xml
+
+# VS Code
+.vscode/settings.json
+.vscode/launch.json
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Backup files
+*.bak
+*.backup
+*.orig
+
+# System files
+Thumbs.db
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+
+# Crash dumps
+*.dmp
+*.mdmp
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage reports
+coverage/
+*.coverage
+*.lcov
+
+# API documentation generated files
+*.swagger.json
+
+# Windows
+desktop.ini
+$RECYCLE.BIN/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Linux
+*~
+.directory
+.Trash-*
