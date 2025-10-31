@@ -1,8 +1,9 @@
 import React, { useState } from "react"
 import { Container, Row, Col, Nav, Button, Form, Dropdown } from "react-bootstrap"
 import { Link, useNavigate } from "react-router-dom"
-import { FaBook, FaSearch, FaUser, FaBookOpen, FaCube, FaSignOutAlt, FaUserCircle } from "react-icons/fa"
+import { FaBook, FaSearch, FaUser, FaBookOpen, FaCube, FaSignOutAlt, FaUserCircle, FaExchangeAlt } from "react-icons/fa"
 import { useAuth } from "@/contexts/AuthContext"
+import NotificationBell from "../../Notifications/NotificationBell"
 
 const UserHeader = () => {
   const [searchQuery, setSearchQuery] = useState("")
@@ -78,10 +79,12 @@ const UserHeader = () => {
 
           <Col xs={12} md={4} className="text-center text-md-end">
             {user ? (
-              <Dropdown>
-                <Dropdown.Toggle variant="outline-primary" className="rounded-pill">
-                  <FaUserCircle className="me-1" /> {user.userName}
-                </Dropdown.Toggle>
+              <div className="d-flex align-items-center justify-content-center justify-content-md-end gap-3">
+                <NotificationBell libraryCardId={user?.id || 1} />
+                <Dropdown>
+                  <Dropdown.Toggle variant="outline-primary" className="rounded-pill">
+                    <FaUserCircle className="me-1" /> {user.userName}
+                  </Dropdown.Toggle>
                 <Dropdown.Menu align="end">
                   <Dropdown.Item disabled>
                     <strong>{user.userName}</strong><br />
@@ -99,6 +102,7 @@ const UserHeader = () => {
                   </Dropdown.Item>
                 </Dropdown.Menu>
               </Dropdown>
+              </div>
             ) : (
               <>
                 <Button
@@ -136,6 +140,9 @@ const UserHeader = () => {
             </Nav.Link>
             <Nav.Link as={Link} to="/authors" className="px-3 fw-semibold text-dark nav-link-hover">
               Tác giả
+            </Nav.Link>
+            <Nav.Link as={Link} to="/borrowing" className="px-3 fw-semibold text-success nav-link-hover">
+              <FaExchangeAlt className="me-1" /> Mượn sách
             </Nav.Link>
             <Nav.Link as={Link} to="/library-3d" className="px-3 fw-semibold text-primary nav-link-hover">
               <FaCube className="me-1" /> Thư Viện 3D

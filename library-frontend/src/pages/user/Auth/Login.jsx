@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Container, Row, Col, Card, Form, Button, Alert, InputGroup } from 'react-bootstrap';
 import { login } from "../../../apis/auth";
 import { useAuth } from '@/contexts/AuthContext';
@@ -10,7 +10,11 @@ const Login = () => {
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { login: setUser } = useAuth();
+  
+  // Get the page they were trying to access
+  const from = location.state?.from?.pathname || '/';
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -24,7 +28,8 @@ const Login = () => {
       if (response.user.role === 'Admin') {
         navigate('/admin');
       } else {
-        navigate('/');
+        // Redirect to the page they were trying to access, or home
+        navigate(from, { replace: true });
       }
     } catch {
       setError('Đăng nhập thất bại');

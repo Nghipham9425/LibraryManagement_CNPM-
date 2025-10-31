@@ -43,7 +43,7 @@ namespace LibraryManagement.API.Controllers
             var user = await _authServices.GetUserByUsernameAsync(request.Username);
             if (user == null) throw new ApiException(500, "User not found after login");
             var refreshToken = await _authServices.GenerateRefreshToken(user.Id);
-            return Ok(new { token, user = new { user.UserName, user.Email, user.Role }, refreshToken, message = "Login successful" });
+            return Ok(new { token, user = new { user.Id, user.UserName, user.Email, user.Role }, refreshToken, message = "Login successful" });
         }
 
         [HttpPost("logout")]
@@ -63,7 +63,7 @@ namespace LibraryManagement.API.Controllers
             var user = await _authServices.GetUserByIdAsync(int.Parse(userIdClaim));
             if (user == null) return NotFound();
 
-            return Ok(new { user.UserName, user.Email, user.Role });
+            return Ok(new { user.Id, user.UserName, user.Email, user.Role });
         }
 
         [HttpPost("refresh")]

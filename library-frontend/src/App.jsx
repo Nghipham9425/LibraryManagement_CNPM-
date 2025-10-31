@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { ToastContainer } from "react-toastify"
 import { AuthProvider } from "./contexts/AuthContext"
 import AdminProtectedRoute from "./components/AdminProtectedRoute"
+import UserProtectedRoute from "./components/UserProtectedRoute"
 import AdminLayout from "./components/Layout/admin/Layout"
 import Dashboard from "./pages/admin/management/Dashboard"
 import Books from "./pages/admin/management/Books"
@@ -21,6 +22,7 @@ import Contact from "./pages/user/Contact/Contact"
 import BookDetails from "./pages/user/BookDetails/BookDetails"
 import LibraryInfo from "./pages/user/LibraryInfo/LibraryInfo"
 import Library3D from "./pages/user/Library3D/Library3D"
+import UserBorrowing from "./pages/user/Borrowing/Borrowing"
 import "react-toastify/dist/ReactToastify.css"
 import "./App.css"
 
@@ -36,6 +38,11 @@ function App() {
             <Route path="books/:id" element={<BookDetails />} />
             <Route path="authors" element={<UserAuthors />} />
             <Route path="genres" element={<UserGenres />} />
+            <Route path="borrowing" element={
+              <UserProtectedRoute>
+                <UserBorrowing />
+              </UserProtectedRoute>
+            } />
             <Route path="contact" element={<Contact />} />
             <Route path="library-info" element={<LibraryInfo />} />
           </Route>

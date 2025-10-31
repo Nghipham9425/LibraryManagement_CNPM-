@@ -191,6 +191,7 @@ const Books = () => {
               onViewDetails={handleViewDetails}
               onEdit={() => {}} // Not implemented for user view
               onDelete={() => {}} // Not implemented for user view
+              showAdminActions={false}
             />
 
             {/* No books message */}

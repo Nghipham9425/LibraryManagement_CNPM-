@@ -1,14 +1,16 @@
 import { useEffect, useMemo, useState, useCallback } from 'react'
-import { Card, Button, Container, Tabs, Tab, Table, Modal, Form, Row, Col, Badge, Spinner } from 'react-bootstrap'
-import { FaPlus, FaExchangeAlt, FaRedo, FaCheck } from 'react-icons/fa'
+import { Card, Button, Container, Tabs, Tab, Table, Modal, Form, Row, Col, Badge, Spinner, Alert } from 'react-bootstrap'
+import { FaPlus, FaExchangeAlt, FaRedo, FaCheck, FaInfoCircle } from 'react-icons/fa'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import { borrowingAPI, bookAPI } from '../../../apis'
+import { useAuth } from '../../../contexts/AuthContext'
 
-// Simple helper to pick a demo LibraryCardId for now
+// Get library card ID from authenticated user
 const useLibraryCardId = () => {
-  // In a real app, get from auth/user profile
-  return 1
+  const { user } = useAuth()
+  // User.Id = LibraryCard.Id
+  return user?.id || 1
 }
 
 const StatusBadge = ({ dueDate }) => {
@@ -218,8 +220,18 @@ const Borrowing = () => {
     </Table>
   )
 
+  const { user } = useAuth()
+
   return (
     <Container fluid>
+      {/* Welcome Alert */}
+      <Alert variant="info" className="mb-4 d-flex align-items-center">
+        <FaInfoCircle className="me-2" size={20} />
+        <div>
+          <strong>Xin chào, {user?.userName}!</strong> Bạn đang xem thông tin mượn/trả sách của tài khoản.
+        </div>
+      </Alert>
+
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h2 className="fw-bold">Mượn/Trả của tôi</h2>

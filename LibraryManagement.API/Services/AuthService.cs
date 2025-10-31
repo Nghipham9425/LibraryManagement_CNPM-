@@ -10,13 +10,15 @@ namespace LibraryManagement.API.Services
     public class AuthService
     {
         private readonly AuthRepository _authRepository;
+        private readonly LibraryDbContext _db;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly JwtTokenService _jwtTokenService;
 
-        public AuthService(AuthRepository authRepository, IConfiguration config, IHttpContextAccessor httpContextAccessor, JwtTokenService jwtTokenService)
+        public AuthService(AuthRepository authRepository, LibraryDbContext db, IConfiguration config, IHttpContextAccessor httpContextAccessor, JwtTokenService jwtTokenService)
         {
             _authRepository = authRepository;
+            _db = db;
             _config = config;
             _httpContextAccessor = httpContextAccessor;
             _jwtTokenService = jwtTokenService;
@@ -41,6 +43,18 @@ namespace LibraryManagement.API.Services
             };
 
             await _authRepository.AddUserAsync(user);
+
+            // Tự động tạo LibraryCard với Id = User.Id
+            var libraryCard = new LibraryCard
+            {
+                Id = user.Id,
+                StudentName = user.FullName ?? username,
+                ExpiryDate = DateTime.UtcNow.AddYears(4), // Thẻ có hiệu lực 4 năm
+                Status = CardStatus.Active
+            };
+
+            _db.LibraryCards.Add(libraryCard);
+            await _db.SaveChangesAsync();
         }
 
         public async Task<string> Login(string username, string password)

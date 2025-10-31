@@ -1,15 +1,26 @@
 
-import { Card, Badge, Button } from 'react-bootstrap'
+import { Badge, Button } from 'react-bootstrap'
 import { FaTimes, FaBook, FaCalendar, FaBuilding, FaBarcode, FaExternalLinkAlt } from 'react-icons/fa'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
 
 const BookInfoPanel = ({ book, onClose }) => {
   const navigate = useNavigate();
+  const { user } = useAuth();
   if (!book) return null
 
   const handleGoToDetail = () => {
     navigate(`/books/${book.id}`)
+    onClose && onClose()
+  }
+
+  const handleBorrowClick = () => {
+    if (!user) {
+      navigate('/login', { state: { from: { pathname: `/books/${book.id}` } } });
+    } else {
+      navigate(`/books/${book.id}`);
+    }
     onClose && onClose()
   }
 
@@ -151,8 +162,16 @@ const BookInfoPanel = ({ book, onClose }) => {
             </div>
           )}
 
-          {/* Go to detail button */}
-          <div className="d-grid mt-4">
+          {/* Action buttons */}
+          <div className="d-grid gap-2 mt-4">
+            <Button 
+              variant="primary" 
+              onClick={handleBorrowClick}
+              className="fw-bold"
+            >
+              <FaBook className="me-2" />
+              {user ? 'Mượn sách này' : 'Đăng nhập để mượn'}
+            </Button>
             <Button variant="outline-primary" onClick={handleGoToDetail}>
               Xem chi tiết sách <FaExternalLinkAlt className="ms-2" />
             </Button>

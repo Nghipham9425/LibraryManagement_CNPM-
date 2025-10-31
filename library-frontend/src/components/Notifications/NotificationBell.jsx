@@ -94,7 +94,7 @@ const NotificationBell = ({ libraryCardId = 1 }) => {
         className="position-relative cursor-pointer p-2"
         style={{ cursor: 'pointer' }}
       >
-        <FaBell size={24} className="text-white" />
+        <FaBell size={24} style={{ color: '#17a2b8' }} />
         {unreadCount > 0 && (
           <Badge
             pill

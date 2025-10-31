@@ -1,8 +1,12 @@
 import { Row, Col, Card, Button, Dropdown, Badge } from "react-bootstrap"
-import { FaEllipsisV, FaEdit, FaTrash, FaEye } from "react-icons/fa"
+import { FaEllipsisV, FaEdit, FaTrash, FaEye, FaBook } from "react-icons/fa"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "../../contexts/AuthContext"
 import "../../styles/bookGrid.css"
 
-const BookGrid = ({ books, onEdit, onDelete, onViewDetails }) => {
+const BookGrid = ({ books, onEdit, onDelete, onViewDetails, showAdminActions = false }) => {
+  const navigate = useNavigate()
+  const { user } = useAuth()
   return (
     <Row className="g-3">
       {books.map((book) => (
@@ -82,15 +86,46 @@ const BookGrid = ({ books, onEdit, onDelete, onViewDetails }) => {
                   <strong>Năm:</strong> {book.publicationYear}
                 </Card.Text>
               )}
-              <Button
-                variant="primary"
-                size="sm"
-                className="mt-auto w-100"
-                onClick={() => onViewDetails(book)}
-              >
-                <FaEye className="me-2" />
-                Xem Chi Tiết
-              </Button>
+              <div className="d-flex gap-2 mt-auto">
+                {showAdminActions ? (
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="w-100"
+                    onClick={() => onViewDetails(book)}
+                  >
+                    <FaEye className="me-2" />
+                    Xem Chi Tiết
+                  </Button>
+                ) : (
+                  <>
+                    <Button
+                      variant="success"
+                      size="sm"
+                      className="flex-grow-1"
+                      onClick={() => {
+                        if (!user) {
+                          navigate('/login', { state: { from: { pathname: `/books/${book.id}` } } })
+                        } else {
+                          navigate(`/books/${book.id}`)
+                        }
+                      }}
+                    >
+                      <FaBook className="me-1" />
+                      Mượn
+                    </Button>
+                    <Button
+                      variant="outline-primary"
+                      size="sm"
+                      className="flex-grow-1"
+                      onClick={() => onViewDetails(book)}
+                    >
+                      <FaEye className="me-1" />
+                      Chi tiết
+                    </Button>
+                  </>
+                )}
+              </div>
             </Card.Body>
           </Card>
         </Col>

@@ -198,6 +198,7 @@ const Books = () => {
               onEdit={handleEdit}
               onDelete={handleDelete}
               onViewDetails={handleViewDetails}
+              showAdminActions={true}
             />
           )}
         </div>

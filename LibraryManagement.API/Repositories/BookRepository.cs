@@ -27,6 +27,7 @@ namespace LibraryManagement.API.Repositories
             .ThenInclude(ba => ba.Author)
             .Include(b => b.BookGenres)
             .ThenInclude(bg => bg.Genre)
+            .Include(b => b.BookItems)
             .FirstOrDefaultAsync(b => b.Id == id);
         public async Task AddAsync(Book book)
         {
