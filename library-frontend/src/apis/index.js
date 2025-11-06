@@ -6,6 +6,7 @@ const api = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  withCredentials: true, // Gửi cookie tự động
 })
 
 api.interceptors.request.use(
@@ -140,3 +141,43 @@ export const borrowingAPI = {
     return response.data
   },
 }
+
+export const userAPI = {
+  getAll: async () => {
+    const response = await api.get("/users")
+    return response.data
+  },
+  getById: async (id) => {
+    const response = await api.get(`/users/${id}`)
+    return response.data
+  },
+  getMe: async () => {
+    const response = await api.get("/users/me")
+    return response.data
+  },
+  updateMe: async (data) => {
+    const response = await api.put("/users/me", data)
+    return response.data
+  },
+  changePassword: async (currentPassword, newPassword) => {
+    const response = await api.post("/users/change-password", { currentPassword, newPassword })
+    return response.data
+  },
+  create: async (data) => {
+    const response = await api.post("/users", data)
+    return response.data
+  },
+  update: async (id, data) => {
+    const response = await api.put(`/users/${id}`, data)
+    return response.data
+  },
+  delete: async (id) => {
+    const response = await api.delete(`/users/${id}`)
+    return response.data
+  },
+  activate: async (id) => {
+    const response = await api.post(`/users/${id}/activate`)
+    return response.data
+  },
+}
+

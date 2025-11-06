@@ -23,6 +23,7 @@ import BookDetails from "./pages/user/BookDetails/BookDetails"
 import LibraryInfo from "./pages/user/LibraryInfo/LibraryInfo"
 import Library3D from "./pages/user/Library3D/Library3D"
 import UserBorrowing from "./pages/user/Borrowing/Borrowing"
+import Profile from "./pages/user/Profile/Profile"
 import "react-toastify/dist/ReactToastify.css"
 import "./App.css"
 
@@ -41,6 +42,11 @@ function App() {
             <Route path="borrowing" element={
               <UserProtectedRoute>
                 <UserBorrowing />
+              </UserProtectedRoute>
+            } />
+            <Route path="profile" element={
+              <UserProtectedRoute>
+                <Profile />
               </UserProtectedRoute>
             } />
             <Route path="contact" element={<Contact />} />
