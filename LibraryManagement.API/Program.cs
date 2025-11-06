@@ -49,9 +49,11 @@ builder.Services.AddScoped<LibraryManagement.API.Utils.JwtTokenService>();
 builder.Services.AddScoped<BorrowingRepository>();
 builder.Services.AddScoped<BorrowingService>();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<UserRepository>();
+builder.Services.AddScoped<UserService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<BookValidator>();
-builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<GenreValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AuthorValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();

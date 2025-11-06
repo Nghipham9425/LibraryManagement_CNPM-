@@ -43,13 +43,27 @@ namespace LibraryManagement.API.Controllers
             var user = await _authServices.GetUserByUsernameAsync(request.Username);
             if (user == null) throw new ApiException(500, "User not found after login");
             var refreshToken = await _authServices.GenerateRefreshToken(user.Id);
-            return Ok(new { token, user = new { user.Id, user.UserName, user.Email, user.Role }, refreshToken, message = "Login successful" });
+            
+            // Set JWT token as HttpOnly cookie
+            Response.Cookies.Append("accessToken", token, new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = false, // true in production with HTTPS
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTimeOffset.UtcNow.AddDays(7)
+            });
+            
+            return Ok(new { user = new { user.Id, user.UserName, user.Email, user.Role }, refreshToken, message = "Login successful" });
         }
 
         [HttpPost("logout")]
         public async Task<IActionResult> Logout()
         {
             await _authServices.Logout();
+            
+            // Delete JWT cookie
+            Response.Cookies.Delete("accessToken");
+            
             return Ok(new { message = "Logged out" });
         }
 
