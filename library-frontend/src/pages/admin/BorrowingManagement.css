@@ -1,0 +1,40 @@
+.borrowing-management {
+  min-height: 100vh;
+  background-color: #f8f9fa;
+}
+
+.stat-card {
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.stat-card h5 {
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  opacity: 0.9;
+}
+
+.stat-card h3 {
+  font-size: 2rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.table-danger {
+  background-color: #f8d7da !important;
+}
+
+.table td {
+  vertical-align: middle;
+}
+
+.btn-group-sm .btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+}

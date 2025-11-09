@@ -2,7 +2,6 @@ import { Navbar, Container, Button } from "react-bootstrap"
 import { FaBook, FaSignOutAlt } from "react-icons/fa"
 import { useAuth } from "@/contexts/AuthContext"
 import { useNavigate } from "react-router-dom"
-import NotificationBell from "../../Notifications/NotificationBell"
 
 const Header = () => {
   const { user, logout } = useAuth()
@@ -21,7 +20,6 @@ const Header = () => {
           <span className="fw-bold">Hệ Thống Quản Lý Thư Viện - GROUP 7</span>
         </Navbar.Brand>
         <div className="d-flex align-items-center gap-3">
-          <NotificationBell libraryCardId={1} />
           <Navbar.Text className="text-white">
             Xin chào, {user?.userName || 'Admin'}
           </Navbar.Text>

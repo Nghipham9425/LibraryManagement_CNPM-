@@ -7,7 +7,7 @@ import AdminLayout from "./components/Layout/admin/Layout"
 import Dashboard from "./pages/admin/management/Dashboard"
 import Books from "./pages/admin/management/Books"
 import Members from "./pages/admin/management/Members"
-import Borrowing from "./pages/admin/management/Borrowing"
+import BorrowingManagement from "./pages/admin/BorrowingManagement"
 import Authors from "./pages/admin/management/Authors"
 import Genres from "./pages/admin/management/Genres"
 import AdminLogin from "./pages/admin/auth/AdminLogin"
@@ -63,7 +63,7 @@ function App() {
             <Route path="books" element={<Books />} />
             <Route path="authors" element={<Authors />} />
             <Route path="genres" element={<Genres />} />
-            <Route path="borrowing" element={<Borrowing />} />
+            <Route path="borrowing" element={<BorrowingManagement />} />
             <Route path="members" element={<Members />} />
           </Route>
         </Routes>

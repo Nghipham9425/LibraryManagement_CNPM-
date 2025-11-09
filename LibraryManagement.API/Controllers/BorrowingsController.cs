@@ -56,5 +56,42 @@ namespace LibraryManagement.API.Controllers
             var list = await _service.GetOverdueAsync(libraryCardId);
             return Ok(list);
         }
+
+        // Admin endpoints
+        [HttpGet("all")]
+        public async Task<IActionResult> GetAll([FromQuery] string? status = null, [FromQuery] string? search = null)
+        {
+            var list = await _service.GetAllBorrowingsAsync(status, search);
+            return Ok(list);
+        }
+
+        [HttpGet("stats")]
+        public async Task<IActionResult> GetStats()
+        {
+            var stats = await _service.GetBorrowingStatsAsync();
+            return Ok(stats);
+        }
+
+        [HttpGet("{id:int}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var borrowing = await _service.GetByIdAsync(id);
+            if (borrowing == null) return NotFound();
+            return Ok(borrowing);
+        }
+
+        [HttpPost("{id:int}/extend")]
+        public async Task<IActionResult> ExtendBorrowing(int id, [FromBody] int additionalDays)
+        {
+            var result = await _service.ExtendBorrowingAsync(id, additionalDays);
+            return Ok(result);
+        }
+
+        [HttpPost("{id:int}/return-admin")]
+        public async Task<IActionResult> ReturnByAdmin(int id)
+        {
+            var result = await _service.ReturnByAdminAsync(id);
+            return Ok(result);
+        }
     }
 }

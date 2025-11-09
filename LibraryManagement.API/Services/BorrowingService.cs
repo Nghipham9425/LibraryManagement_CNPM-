@@ -124,6 +124,137 @@ namespace LibraryManagement.API.Services
             return borrowings.Select(MapToViewDto).ToList();
         }
 
+        // Admin methods
+        public async Task<List<BorrowingViewDto>> GetAllBorrowingsAsync(string? status, string? search)
+        {
+            var query = _db.Borrowings
+                .Include(b => b.BookItem)
+                    .ThenInclude(bi => bi.Book)
+                        .ThenInclude(b => b.BookGenres)
+                            .ThenInclude(bg => bg.Genre)
+                .Include(b => b.BookItem)
+                    .ThenInclude(bi => bi.Book)
+                        .ThenInclude(b => b.BookAuthors)
+                            .ThenInclude(ba => ba.Author)
+                .Include(b => b.LibraryCard)
+                .AsQueryable();
+
+            // Filter by status
+            if (!string.IsNullOrEmpty(status))
+            {
+                if (status.ToLower() == "active")
+                {
+                    // Chỉ lấy sách đang mượn và chưa quá hạn
+                    query = query.Where(b => b.Status == BorrowingStatus.Borrowed && b.DueDate >= DateTime.UtcNow);
+                }
+                else if (status.ToLower() == "overdue")
+                {
+                    query = query.Where(b => b.Status == BorrowingStatus.Borrowed && b.DueDate < DateTime.UtcNow);
+                }
+                else if (status.ToLower() == "returned")
+                {
+                    query = query.Where(b => b.Status == BorrowingStatus.Returned);
+                }
+            }
+
+            // Search by user name, book title, or control number
+            if (!string.IsNullOrEmpty(search))
+            {
+                query = query.Where(b =>
+                    (b.LibraryCard.StudentName != null && b.LibraryCard.StudentName.Contains(search)) ||
+                    (b.BookItem.Book.Title != null && b.BookItem.Book.Title.Contains(search)) ||
+                    (b.BookItem.ControlNumber != null && b.BookItem.ControlNumber.Contains(search))
+                );
+            }
+
+            var borrowings = await query.OrderByDescending(b => b.BorrowDate).ToListAsync();
+            return borrowings.Select(MapToViewDtoWithUser).ToList();
+        }
+
+        public async Task<object> GetBorrowingStatsAsync()
+        {
+            // Đang mượn (chưa quá hạn)
+            var totalActive = await _db.Borrowings.CountAsync(b => b.Status == BorrowingStatus.Borrowed && b.DueDate >= DateTime.UtcNow);
+            // Quá hạn
+            var totalOverdue = await _db.Borrowings.CountAsync(b => b.Status == BorrowingStatus.Borrowed && b.DueDate < DateTime.UtcNow);
+            // Đã trả
+            var totalReturned = await _db.Borrowings.CountAsync(b => b.Status == BorrowingStatus.Returned);
+            // Tổng số
+            var totalBorrowings = await _db.Borrowings.CountAsync();
+
+            return new
+            {
+                totalActive,
+                totalOverdue,
+                totalReturned,
+                totalBorrowings
+            };
+        }
+
+        public async Task<BorrowingViewDto?> GetByIdAsync(int id)
+        {
+            var borrowing = await _db.Borrowings
+                .Include(b => b.BookItem)
+                    .ThenInclude(bi => bi.Book)
+                        .ThenInclude(b => b.BookGenres)
+                            .ThenInclude(bg => bg.Genre)
+                .Include(b => b.BookItem)
+                    .ThenInclude(bi => bi.Book)
+                        .ThenInclude(b => b.BookAuthors)
+                            .ThenInclude(ba => ba.Author)
+                .Include(b => b.LibraryCard)
+                .FirstOrDefaultAsync(b => b.Id == id);
+
+            return borrowing == null ? null : MapToViewDtoWithUser(borrowing);
+        }
+
+        public async Task<BorrowingViewDto> ExtendBorrowingAsync(int id, int additionalDays)
+        {
+            var borrowing = await _db.Borrowings.FindAsync(id) ??
+                            throw new Utils.ApiException(404, "Phiếu mượn không tồn tại");
+
+            if (borrowing.Status != BorrowingStatus.Borrowed)
+                throw new Utils.ApiException(400, "Chỉ gia hạn khi đang mượn");
+
+            borrowing.DueDate = borrowing.DueDate.AddDays(additionalDays);
+            await _db.SaveChangesAsync();
+
+            // Send notification
+            var item = await _db.BookItems.Include(bi => bi.Book).FirstOrDefaultAsync(bi => bi.Id == borrowing.BookItemId);
+            if (item?.Book != null)
+            {
+                await _notificationService.NotifyRenewSuccessAsync(borrowing.LibraryCardId, borrowing.Id, item.Book.Title, borrowing.DueDate);
+            }
+
+            return (await GetByIdAsync(id))!;
+        }
+
+        public async Task<BorrowingViewDto> ReturnByAdminAsync(int id)
+        {
+            var borrowing = await _db.Borrowings.FindAsync(id) ??
+                            throw new Utils.ApiException(404, "Phiếu mượn không tồn tại");
+
+            if (borrowing.Status != BorrowingStatus.Borrowed)
+                throw new Utils.ApiException(400, "Phiếu mượn không ở trạng thái đang mượn");
+
+            borrowing.Status = BorrowingStatus.Returned;
+            borrowing.ReturnDate = DateTime.UtcNow;
+
+            // Free book item
+            var item = await _db.BookItems.Include(bi => bi.Book).FirstAsync(bi => bi.Id == borrowing.BookItemId);
+            item.Status = BookItemStatus.Available;
+
+            await _db.SaveChangesAsync();
+
+            // Send notification
+            if (item.Book != null)
+            {
+                await _notificationService.NotifyReturnSuccessAsync(borrowing.LibraryCardId, item.Book.Title);
+            }
+
+            return (await GetByIdAsync(id))!;
+        }
+
         private BorrowingViewDto MapToViewDto(Borrowing b)
         {
             return new BorrowingViewDto
@@ -159,6 +290,18 @@ namespace LibraryManagement.API.Services
                     }
                 }
             };
+        }
+
+        private BorrowingViewDto MapToViewDtoWithUser(Borrowing b)
+        {
+            var dto = MapToViewDto(b);
+            // Add user information
+            if (b.LibraryCard != null)
+            {
+                dto.UserName = b.LibraryCard.StudentName;
+                dto.LibraryCardStatus = (int)b.LibraryCard.Status;
+            }
+            return dto;
         }
     }
 }

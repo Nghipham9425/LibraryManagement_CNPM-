@@ -13,6 +13,10 @@ namespace LibraryManagement.API.DTOs
         public DateTime? ReturnDate { get; set; }
         public int Status { get; set; }
         
+        // User information (for admin)
+        public string? UserName { get; set; }
+        public int? LibraryCardStatus { get; set; }
+        
         // Book information for display
         public BookItemViewDto? BookItem { get; set; }
     }
