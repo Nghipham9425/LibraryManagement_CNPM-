@@ -24,6 +24,8 @@ import LibraryInfo from "./pages/user/LibraryInfo/LibraryInfo"
 import Library3D from "./pages/user/Library3D/Library3D"
 import UserBorrowing from "./pages/user/Borrowing/Borrowing"
 import Profile from "./pages/user/Profile/Profile"
+import MyLibraryCard from "./pages/user/MyLibraryCard/MyLibraryCard"
+import LibraryCards from "./components/admin/LibraryCards/LibraryCards"
 import "react-toastify/dist/ReactToastify.css"
 import "./App.css"
 
@@ -49,6 +51,11 @@ function App() {
                 <Profile />
               </UserProtectedRoute>
             } />
+            <Route path="my-library-card" element={
+              <UserProtectedRoute>
+                <MyLibraryCard />
+              </UserProtectedRoute>
+            } />
             <Route path="contact" element={<Contact />} />
             <Route path="library-info" element={<LibraryInfo />} />
           </Route>
@@ -65,6 +72,7 @@ function App() {
             <Route path="genres" element={<Genres />} />
             <Route path="borrowing" element={<BorrowingManagement />} />
             <Route path="members" element={<Members />} />
+            <Route path="library-cards" element={<LibraryCards />} />
           </Route>
         </Routes>
         <ToastContainer

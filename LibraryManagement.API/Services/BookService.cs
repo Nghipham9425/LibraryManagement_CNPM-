@@ -24,7 +24,16 @@ namespace LibraryManagement.API.Services
         public async Task<IEnumerable<BookDto>> GetAllBooksAsync()
         {
             var books = await _bookRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<BookDto>>(books);
+            var bookDtos = _mapper.Map<IEnumerable<BookDto>>(books).ToList();
+            
+            // Tính số lượng sách cho mỗi book
+            foreach (var dto in bookDtos)
+            {
+                dto.TotalCopies = dto.BookItems?.Count ?? 0;
+                dto.AvailableCopies = dto.BookItems?.Count(bi => bi.Status == BookItemStatus.Available) ?? 0;
+            }
+            
+            return bookDtos;
         }
 
         public async Task<BookDto?> GetBookByIdAsync(int id)
@@ -32,7 +41,13 @@ namespace LibraryManagement.API.Services
             var book = await _bookRepository.GetByIdAsync(id);
             if (book == null) return null;
 
-            return _mapper.Map<BookDto>(book);
+            var dto = _mapper.Map<BookDto>(book);
+            
+            // Tính số lượng sách
+            dto.TotalCopies = dto.BookItems?.Count ?? 0;
+            dto.AvailableCopies = dto.BookItems?.Count(bi => bi.Status == BookItemStatus.Available) ?? 0;
+            
+            return dto;
         }
 
         public async Task AddBookAsync(Book book)

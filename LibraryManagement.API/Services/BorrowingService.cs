@@ -26,6 +26,10 @@ namespace LibraryManagement.API.Services
             if (card == null)
                 throw new Utils.ApiException(400, "Thẻ thư viện không hợp lệ hoặc không hoạt động");
 
+            // Check if card has expired
+            if (card.ExpiryDate < DateTime.UtcNow)
+                throw new Utils.ApiException(400, "Thẻ thư viện đã hết hạn");
+
             // Validate book item availability
             var item = await _db.BookItems.FirstOrDefaultAsync(bi => bi.Id == request.BookItemId);
             if (item == null)
@@ -33,7 +37,27 @@ namespace LibraryManagement.API.Services
             if (item.Status != BookItemStatus.Available)
                 throw new Utils.ApiException(400, "Bản sao sách không sẵn sàng cho mượn");
 
+            // Check if user is currently borrowing (chưa trả sách thì không mượn tiếp)
+            var hasActiveBorrowings = await _db.Borrowings
+                .AnyAsync(b => b.LibraryCardId == request.LibraryCardId && b.Status == BorrowingStatus.Borrowed);
+            if (hasActiveBorrowings)
+                throw new Utils.ApiException(400, "Bạn đang có sách chưa trả. Vui lòng trả sách trước khi mượn tiếp.");
+
+            // Check maximum 3 books per borrow session (đếm số MÃ SÁCH khác nhau, không phải số BookItem)
+            var currentBorrowedBookIds = await _db.Borrowings
+                .Where(b => b.LibraryCardId == request.LibraryCardId && b.Status == BorrowingStatus.Borrowed)
+                .Include(b => b.BookItem)
+                .Select(b => b.BookItem.BookId)
+                .Distinct()
+                .CountAsync();
+            
+            if (currentBorrowedBookIds >= 3)
+                throw new Utils.ApiException(400, "Bạn đã mượn tối đa 3 mã sách. Vui lòng trả sách trước khi mượn tiếp.");
+
             var days = request.Days ?? 15;
+            if (days > 15)
+                throw new Utils.ApiException(400, "Thời hạn mượn tối đa là 15 ngày");
+
             var now = DateTime.UtcNow;
             var borrow = new Borrowing
             {
@@ -299,6 +323,7 @@ namespace LibraryManagement.API.Services
             if (b.LibraryCard != null)
             {
                 dto.UserName = b.LibraryCard.StudentName;
+                dto.CardNumber = b.LibraryCard.CardNumber; // Thêm mã thẻ thư viện
                 dto.LibraryCardStatus = (int)b.LibraryCard.Status;
             }
             return dto;

@@ -44,6 +44,21 @@ namespace LibraryManagement.API.Controllers
                 return BadRequest(new { message = "Dữ liệu không hợp lệ", errors });
             }
 
+            // Tự động tạo BookItems (bản sao) nếu có NumberOfCopies
+            if (bookInput.NumberOfCopies.HasValue && bookInput.NumberOfCopies.Value > 0)
+            {
+                book.BookItems = new List<BookItem>();
+                for (int i = 1; i <= bookInput.NumberOfCopies.Value; i++)
+                {
+                    book.BookItems.Add(new BookItem
+                    {
+                        ControlNumber = i.ToString("D3"), // 001, 002, 003...
+                        Status = BookItemStatus.Available,
+                        Notes = string.Empty
+                    });
+                }
+            }
+
             await _bookService.AddBookAsync(book);
             return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
         }

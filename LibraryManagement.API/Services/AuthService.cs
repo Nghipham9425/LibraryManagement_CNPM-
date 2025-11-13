@@ -43,18 +43,8 @@ namespace LibraryManagement.API.Services
             };
 
             await _authRepository.AddUserAsync(user);
-
-            // Tự động tạo LibraryCard với Id = User.Id
-            var libraryCard = new LibraryCard
-            {
-                Id = user.Id,
-                StudentName = user.FullName ?? username,
-                ExpiryDate = DateTime.UtcNow.AddYears(4), // Thẻ có hiệu lực 4 năm
-                Status = CardStatus.Active
-            };
-
-            _db.LibraryCards.Add(libraryCard);
-            await _db.SaveChangesAsync();
+            
+            // User sẽ tự đăng ký LibraryCard sau qua trang /my-library-card
         }
 
         public async Task<string> Login(string username, string password)

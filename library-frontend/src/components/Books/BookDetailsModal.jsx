@@ -68,6 +68,16 @@ const BookDetailsModal = ({ show, onHide, book }) => {
                 <p className="mb-0">{book.publisher}</p>
               </div>
             )}
+            {/* Hiển thị số lượng sách */}
+            <div className="mb-3">
+              <strong className="text-muted">Số Lượng:</strong>
+              <p className="mb-0">
+                <span className={book.availableCopies > 0 ? "text-success fw-bold" : "text-danger fw-bold"}>
+                  {book.availableCopies}/{book.totalCopies} cuốn
+                </span>
+                {book.availableCopies === 0 && <span className="text-danger ms-2">(Hết sách)</span>}
+              </p>
+            </div>
             {book.description && (
               <div className="mb-3">
                 <strong className="text-muted">Mô Tả:</strong>

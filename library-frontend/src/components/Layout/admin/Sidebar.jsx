@@ -1,6 +1,6 @@
 import { Nav } from "react-bootstrap"
 import { NavLink, useLocation } from "react-router-dom"
-import { FaHome, FaBook, FaUsers, FaExchangeAlt, FaTags } from "react-icons/fa"
+import { FaHome, FaBook, FaUsers, FaExchangeAlt, FaTags, FaIdCard } from "react-icons/fa"
 
 const Sidebar = () => {
   const location = useLocation()
@@ -12,6 +12,7 @@ const Sidebar = () => {
     { path: "/admin/genres", label: "Thể loại", icon: FaTags },
     { path: "/admin/borrowing", label: "Mượn trả", icon: FaExchangeAlt },
     { path: "/admin/members", label: "Thành viên", icon: FaUsers },
+    { path: "/admin/library-cards", label: "Thẻ thư viện", icon: FaIdCard },
   ]
 
   const isActive = (path) => {

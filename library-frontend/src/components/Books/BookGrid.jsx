@@ -1,10 +1,10 @@
 import { Row, Col, Card, Button, Dropdown, Badge } from "react-bootstrap"
-import { FaEllipsisV, FaEdit, FaTrash, FaEye, FaBook } from "react-icons/fa"
+import { FaEllipsisV, FaEdit, FaTrash, FaEye, FaBook, FaCopy } from "react-icons/fa"
 import { useNavigate } from "react-router-dom"
 import { useAuth } from "../../contexts/AuthContext"
 import "../../styles/bookGrid.css"
 
-const BookGrid = ({ books, onEdit, onDelete, onViewDetails, showAdminActions = false }) => {
+const BookGrid = ({ books, onEdit, onDelete, onViewDetails, onManageItems, showAdminActions = false }) => {
   const navigate = useNavigate()
   const { user } = useAuth()
   return (
@@ -28,32 +28,44 @@ const BookGrid = ({ books, onEdit, onDelete, onViewDetails, showAdminActions = f
                     )}
                   </div>
                 )}
-                <Dropdown className="book-card-dropdown">
-                  <Dropdown.Toggle
-                    variant="light"
-                    size="sm"
-                    className="book-card-dropdown-toggle"
-                    id={`dropdown-${book.id}`}
-                  >
-                    <FaEllipsisV />
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu className="book-card-dropdown-menu">
-                    <Dropdown.Item
-                      onClick={() => onEdit(book)}
-                      className="book-card-dropdown-item"
+                {/* Chỉ hiển thị dropdown menu cho admin */}
+                {showAdminActions && (
+                  <Dropdown className="book-card-dropdown">
+                    <Dropdown.Toggle
+                      variant="light"
+                      size="sm"
+                      className="book-card-dropdown-toggle"
+                      id={`dropdown-${book.id}`}
                     >
-                      <FaEdit className="me-2" />
-                      Sửa
-                    </Dropdown.Item>
-                    <Dropdown.Item
-                      onClick={() => onDelete(book.id)}
-                      className="book-card-dropdown-item text-danger"
-                    >
-                      <FaTrash className="me-2" />
-                      Xóa
-                    </Dropdown.Item>
-                  </Dropdown.Menu>
-                </Dropdown>
+                      <FaEllipsisV />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu className="book-card-dropdown-menu">
+                      <Dropdown.Item
+                        onClick={() => onEdit(book)}
+                        className="book-card-dropdown-item"
+                      >
+                        <FaEdit className="me-2" />
+                        Sửa
+                      </Dropdown.Item>
+                      {onManageItems && (
+                        <Dropdown.Item
+                          onClick={() => onManageItems(book)}
+                          className="book-card-dropdown-item"
+                        >
+                          <FaCopy className="me-2" />
+                          Quản lý bản sao
+                        </Dropdown.Item>
+                      )}
+                      <Dropdown.Item
+                        onClick={() => onDelete(book.id)}
+                        className="book-card-dropdown-item text-danger"
+                      >
+                        <FaTrash className="me-2" />
+                        Xóa
+                      </Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                )}
               </div>
               {book.imageUrl ? (
                 <Card.Img
@@ -82,10 +94,17 @@ const BookGrid = ({ books, onEdit, onDelete, onViewDetails, showAdminActions = f
                   : "Không có thông tin"}
               </Card.Text>
               {book.publicationYear && (
-                <Card.Text className="text-muted small mb-3">
+                <Card.Text className="text-muted small mb-2">
                   <strong>Năm:</strong> {book.publicationYear}
                 </Card.Text>
               )}
+              {/* Hiển thị số lượng sách */}
+              <Card.Text className="text-muted small mb-3">
+                <strong>Số lượng:</strong>{" "}
+                <span className={book.availableCopies > 0 ? "text-success" : "text-danger"}>
+                  {book.availableCopies}/{book.totalCopies} cuốn
+                </span>
+              </Card.Text>
               <div className="d-flex gap-2 mt-auto">
                 {showAdminActions ? (
                   <Button
@@ -103,6 +122,7 @@ const BookGrid = ({ books, onEdit, onDelete, onViewDetails, showAdminActions = f
                       variant="success"
                       size="sm"
                       className="flex-grow-1"
+                      disabled={!book.availableCopies || book.availableCopies === 0}
                       onClick={() => {
                         if (!user) {
                           navigate('/login', { state: { from: { pathname: `/books/${book.id}` } } })
@@ -112,13 +132,19 @@ const BookGrid = ({ books, onEdit, onDelete, onViewDetails, showAdminActions = f
                       }}
                     >
                       <FaBook className="me-1" />
-                      Mượn
+                      {book.availableCopies > 0 ? "Mượn" : "Hết sách"}
                     </Button>
                     <Button
                       variant="outline-primary"
                       size="sm"
                       className="flex-grow-1"
-                      onClick={() => onViewDetails(book)}
+                      onClick={() => {
+                        if (!user) {
+                          navigate('/login', { state: { from: { pathname: `/books/${book.id}` } } })
+                        } else {
+                          navigate(`/books/${book.id}`)
+                        }
+                      }}
                     >
                       <FaEye className="me-1" />
                       Chi tiết

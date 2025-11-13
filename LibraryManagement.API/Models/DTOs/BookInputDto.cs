@@ -11,5 +11,8 @@ namespace LibraryManagement.API.Models
         public string? Publisher { get; set; }
         public string? ImageUrl { get; set; }
         public string? Description { get; set; }
+        
+        // Số lượng bản sao muốn tạo (chỉ dùng khi CREATE book)
+        public int? NumberOfCopies { get; set; }
     }
 }

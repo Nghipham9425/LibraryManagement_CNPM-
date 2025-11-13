@@ -181,3 +181,31 @@ export const userAPI = {
   },
 }
 
+export const bookItemAPI = {
+  // Lấy tất cả bản sao của một sách
+  getAllByBookId: async (bookId) => {
+    const response = await api.get(`/books/${bookId}/items`)
+    return response.data
+  },
+  // Lấy chi tiết một bản sao
+  getById: async (bookId, itemId) => {
+    const response = await api.get(`/books/${bookId}/items/${itemId}`)
+    return response.data
+  },
+  // Thêm bản sao mới
+  create: async (bookId, data) => {
+    const response = await api.post(`/books/${bookId}/items`, data)
+    return response.data
+  },
+  // Cập nhật trạng thái bản sao
+  update: async (bookId, itemId, data) => {
+    const response = await api.put(`/books/${bookId}/items/${itemId}`, data)
+    return response.data
+  },
+  // Xóa bản sao
+  delete: async (bookId, itemId) => {
+    const response = await api.delete(`/books/${bookId}/items/${itemId}`)
+    return response.data
+  },
+}
+

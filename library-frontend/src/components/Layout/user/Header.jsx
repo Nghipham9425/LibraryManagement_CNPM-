@@ -13,7 +13,8 @@ const UserHeader = () => {
   const handleSearch = (e) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      navigate(`/search?q=${encodeURIComponent(searchQuery)}`)
+      navigate(`/books?q=${encodeURIComponent(searchQuery)}`)
+      setSearchQuery('') // Clear search after navigate
     }
   }
 

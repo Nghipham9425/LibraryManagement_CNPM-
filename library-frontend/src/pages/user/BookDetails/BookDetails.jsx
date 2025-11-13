@@ -4,6 +4,7 @@ import { Container, Row, Col, Card, Button, Spinner, Alert, Badge, Modal, Form }
 import { FaBook, FaUser, FaTag, FaCalendarAlt, FaExclamationTriangle } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { bookAPI, borrowingAPI } from '../../../apis';
+import libraryCardAPI from '../../../apis/libraryCardAPI';
 import { useAuth } from '../../../contexts/AuthContext';
 
 const BookDetails = () => {
@@ -57,10 +58,39 @@ const BookDetails = () => {
 
     try {
       setBorrowing(true);
-      const libraryCardId = user?.id || 1; // User.Id = LibraryCard.Id
+      
+      // Check if user has a library card
+      let libraryCard;
+      try {
+        libraryCard = await libraryCardAPI.getMyCard();
+      } catch (err) {
+        if (err.response?.status === 404) {
+          toast.error('Bạn chưa có thẻ thư viện. Vui lòng đăng ký thẻ để mượn sách!');
+          setTimeout(() => {
+            navigate('/my-library-card');
+          }, 1500);
+          return;
+        }
+        throw err;
+      }
+
+      // Check if card is active and not expired
+      if (libraryCard.status !== 0) {
+        toast.error('Thẻ thư viện của bạn không hoạt động. Vui lòng liên hệ thủ thư!');
+        return;
+      }
+
+      const expiryDate = new Date(libraryCard.expiryDate);
+      if (expiryDate < new Date()) {
+        toast.error('Thẻ thư viện của bạn đã hết hạn. Vui lòng gia hạn thẻ!');
+        setTimeout(() => {
+          navigate('/my-library-card');
+        }, 1500);
+        return;
+      }
       
       await borrowingAPI.borrow({
-        LibraryCardId: libraryCardId,
+        LibraryCardId: libraryCard.id,
         BookItemId: availableItem.id,
         Days: borrowDays
       });

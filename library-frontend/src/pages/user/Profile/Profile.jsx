@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Container, Row, Col, Card, Button, ListGroup, Modal, Form, Alert, Spinner } from 'react-bootstrap'
-import { FaUser, FaEnvelope, FaIdCard, FaEdit, FaKey, FaSignOutAlt, FaBriefcase, FaCalendar, FaPhone, FaMapMarkerAlt } from 'react-icons/fa'
+import { FaUser, FaEnvelope, FaIdCard, FaEdit, FaKey, FaSignOutAlt, FaBriefcase, FaCalendar, FaPhone, FaMapMarkerAlt, FaCreditCard } from 'react-icons/fa'
 import { useAuth } from '../../../contexts/AuthContext'
 import { toast } from 'react-toastify'
 import { userAPI } from '../../../apis'
+import { useNavigate } from 'react-router-dom'
 
 const Profile = () => {
   const { logout } = useAuth()
+  const navigate = useNavigate()
   const [loading, setLoading] = useState(true)
   const [userInfo, setUserInfo] = useState(null)
   const [showEditModal, setShowEditModal] = useState(false)
@@ -142,6 +144,11 @@ const Profile = () => {
               </ListGroup>
 
               <div className="d-flex gap-2 justify-content-center flex-wrap">
+                {userInfo.role !== 'Admin' && userInfo.role !== 'Librarian' && (
+                  <Button variant="success" onClick={() => navigate('/my-library-card')}>
+                    <FaCreditCard className="me-2" />Thẻ Thư Viện
+                  </Button>
+                )}
                 <Button variant="primary" onClick={handleShowEditModal}><FaEdit className="me-2" />Cập Nhật Thông Tin</Button>
                 <Button variant="warning" onClick={handleShowPasswordModal}><FaKey className="me-2" />Đổi Mật Khẩu</Button>
                 <Button variant="outline-danger" onClick={logout}><FaSignOutAlt className="me-2" />Đăng Xuất</Button>

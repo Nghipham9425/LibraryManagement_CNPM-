@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Row, Col, Card, Spinner, Alert } from 'react-bootstrap';
-import { FaBookOpen } from 'react-icons/fa';
+import { FaBookOpen, FaBook } from 'react-icons/fa';
 import { genreAPI } from '../../../apis';
 
 const Genres = () => {
@@ -25,11 +25,17 @@ const Genres = () => {
     fetchCategories();
   }, []);
 
+  // Màu sắc cho các card
+  const colors = [
+    'primary', 'success', 'info', 'warning', 'danger', 
+    'secondary', 'dark', 'primary', 'success', 'info'
+  ];
+
   if (loading) {
     return (
       <Container className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
         <Spinner animation="border" variant="primary" />
-        <span className="ms-2">Đang tải danh mục...</span>
+        <span className="ms-3">Đang tải danh mục...</span>
       </Container>
     );
   }
@@ -37,12 +43,12 @@ const Genres = () => {
   return (
     <Container fluid className="py-5">
       <div className="text-center mb-5">
-        <h1 className="display-4 fw-bold text-primary mb-3">
-          <FaBookOpen className="me-3" />
-          Danh Mục Sách
+        <h1 className="display-4 fw-bold mb-3">
+          <FaBookOpen className="me-3 text-primary" />
+          Thể Loại Sách
         </h1>
         <p className="lead text-muted">
-          Khám phá các thể loại sách đa dạng trong thư viện
+          Khám phá {categories.length} thể loại sách đa dạng trong thư viện
         </p>
       </div>
 
@@ -50,22 +56,45 @@ const Genres = () => {
 
       <Row className="g-4">
         {categories.length > 0 ? (
-          categories.map((category) => (
+          categories.map((category, index) => (
             <Col key={category.id} xs={12} sm={6} md={4} lg={3}>
-              <Card className="h-100 shadow-sm border-0 hover-card">
-                <Card.Body className="text-center p-4">
-                  <FaBookOpen size={48} className="text-primary mb-3" />
-                  <Card.Title className="fw-bold">{category.name}</Card.Title>
-                  <Card.Text className="text-muted">
-                    Khám phá sách trong thể loại này
-                  </Card.Text>
-                  <Card.Link
-                    as={Link}
-                    to={`/books?genre=${category.name}`}
-                    className="btn btn-primary stretched-link"
+              <Card 
+                className="h-100 shadow-sm border-0 hover-card text-center"
+                style={{ 
+                  transition: 'all 0.3s ease',
+                  cursor: 'pointer'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-10px)';
+                  e.currentTarget.style.boxShadow = '0 8px 20px rgba(0,0,0,0.15)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '';
+                }}
+              >
+                <Card.Body className="p-4 d-flex flex-column">
+                  <div 
+                    className={`bg-${colors[index % colors.length]} bg-opacity-10 rounded-circle mx-auto mb-3 d-flex align-items-center justify-content-center`}
+                    style={{ width: '80px', height: '80px' }}
                   >
-                    Xem Chi Tiết
-                  </Card.Link>
+                    <FaBook 
+                      size={36} 
+                      className={`text-${colors[index % colors.length]}`}
+                    />
+                  </div>
+                  
+                  <Card.Title className="fw-bold mb-2">{category.name}</Card.Title>
+                  <Card.Text className="text-muted small mb-3 flex-grow-1">
+                    {category.description || 'Khám phá sách trong thể loại này'}
+                  </Card.Text>
+                  
+                  <Link
+                    to={`/books?genre=${encodeURIComponent(category.name)}`}
+                    className={`btn btn-${colors[index % colors.length]} btn-sm`}
+                  >
+                    Xem Sách
+                  </Link>
                 </Card.Body>
               </Card>
             </Col>

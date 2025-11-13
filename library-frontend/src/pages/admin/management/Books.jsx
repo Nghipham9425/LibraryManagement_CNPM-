@@ -7,6 +7,9 @@ import BookGrid from "../../../components/Books/BookGrid"
 import BookFormModal from "../../../components/Books/BookFormModal"
 import BookDetailsModal from "../../../components/Books/BookDetailsModal"
 import BookSearch from "../../../components/Books/BookSearch"
+import BookItemsManager from "../../../components/Books/BookItemsManager"
+import Pagination from "../../../components/Pagination"
+import usePagination from "../../../hooks/usePagination"
 
 const Books = () => {
   const bookErrorMessages = (error) => {
@@ -32,9 +35,58 @@ const Books = () => {
     imageUrl: "",
     description: "",
   })
-  const [searchTerm, setSearchTerm] = useState("")
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [selectedBook, setSelectedBook] = useState(null)
+  const [showItemsModal, setShowItemsModal] = useState(false)
+  const [selectedBookForItems, setSelectedBookForItems] = useState(null)
+  
+  // Filter states
+  const [searchTerm, setSearchTerm] = useState('')
+  const [selectedGenre, setSelectedGenre] = useState('')
+  const [selectedAuthor, setSelectedAuthor] = useState('')
+  const [availableOnly, setAvailableOnly] = useState(false)
+  const [sortBy, setSortBy] = useState('title')
+
+  // Filter logic
+  const filteredBooks = books
+    .filter((book) => {
+      const matchesSearch = searchTerm === '' || 
+        book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (book.bookAuthors && book.bookAuthors.some(ba => ba.authorName?.toLowerCase().includes(searchTerm.toLowerCase())))
+      
+      const matchesGenre = !selectedGenre || (book.genres && book.genres.some(g => g.toLowerCase() === selectedGenre.toLowerCase()))
+      const matchesAuthor = !selectedAuthor || (book.bookAuthors && book.bookAuthors.some(ba => ba.authorName === selectedAuthor))
+      const matchesAvailability = !availableOnly || (book.availableCopies && book.availableCopies > 0)
+
+      return matchesSearch && matchesGenre && matchesAuthor && matchesAvailability
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'title':
+          return a.title.localeCompare(b.title)
+        case 'title-desc':
+          return b.title.localeCompare(a.title)
+        case 'year-desc':
+          return (b.publicationYear || 0) - (a.publicationYear || 0)
+        case 'year-asc':
+          return (a.publicationYear || 0) - (b.publicationYear || 0)
+        case 'available':
+          return (b.availableCopies || 0) - (a.availableCopies || 0)
+        default:
+          return 0
+      }
+    })
+
+  // Pagination
+  const {
+    currentPage,
+    totalPages,
+    currentItems: paginatedBooks,
+    goToPage,
+    totalItems,
+    startIndex,
+    endIndex,
+  } = usePagination(filteredBooks, 12) // 12 books per page
 
   useEffect(() => {
     fetchBooks()
@@ -129,6 +181,11 @@ const Books = () => {
     setShowDetailsModal(true)
   }
 
+  const handleManageItems = (book) => {
+    setSelectedBookForItems(book)
+    setShowItemsModal(true)
+  }
+
   const resetForm = () => {
     setFormData({
       title: "",
@@ -141,12 +198,6 @@ const Books = () => {
       description: "",
     })
   }
-
-  const filteredBooks = books.filter(
-    (book) =>
-      book.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (book.bookAuthors && book.bookAuthors.some(ba => ba.authorName?.toLowerCase().includes(searchTerm.toLowerCase())))
-  )
 
   return (
     <div>
@@ -167,7 +218,20 @@ const Books = () => {
         </Button>
       </div>
 
-      <BookSearch searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <BookSearch 
+        searchTerm={searchTerm} 
+        setSearchTerm={setSearchTerm}
+        selectedGenre={selectedGenre}
+        setSelectedGenre={setSelectedGenre}
+        selectedAuthor={selectedAuthor}
+        setSelectedAuthor={setSelectedAuthor}
+        availableOnly={availableOnly}
+        setAvailableOnly={setAvailableOnly}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+        genres={genres}
+        authors={authors}
+      />
 
       <div className="card border-0 shadow-sm">
         <div className="card-body">
@@ -193,13 +257,24 @@ const Books = () => {
               </Button>
             </div>
           ) : (
-            <BookGrid
-              books={filteredBooks}
-              onEdit={handleEdit}
-              onDelete={handleDelete}
-              onViewDetails={handleViewDetails}
-              showAdminActions={true}
-            />
+            <>
+              <div className="mb-3 text-muted">
+                Hiển thị {startIndex} - {endIndex} của {totalItems} cuốn sách
+              </div>
+              <BookGrid
+                books={paginatedBooks}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onViewDetails={handleViewDetails}
+                onManageItems={handleManageItems}
+                showAdminActions={true}
+              />
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={goToPage}
+              />
+            </>
           )}
         </div>
       </div>
@@ -223,6 +298,17 @@ const Books = () => {
         show={showDetailsModal}
         onHide={() => setShowDetailsModal(false)}
         book={selectedBook}
+      />
+
+      <BookItemsManager
+        show={showItemsModal}
+        onHide={() => {
+          setShowItemsModal(false)
+          setSelectedBookForItems(null)
+          fetchBooks() // Reload để cập nhật số lượng
+        }}
+        bookId={selectedBookForItems?.id}
+        bookTitle={selectedBookForItems?.title}
       />
     </div>
   )

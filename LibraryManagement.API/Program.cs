@@ -39,6 +39,8 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<BookRepository>();
 builder.Services.AddScoped<BookService>();
+builder.Services.AddScoped<BookItemRepository>();
+builder.Services.AddScoped<BookItemService>();
 builder.Services.AddScoped<AuthorRepository>();
 builder.Services.AddScoped<AuthorService>();
 builder.Services.AddScoped<GenreRepository>();
@@ -51,12 +53,15 @@ builder.Services.AddScoped<BorrowingService>();
 builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<LibraryCardRepository>();
+builder.Services.AddScoped<LibraryCardService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<BookValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDtoValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<GenreValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<AuthorValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterRequestValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<CreateLibraryCardDtoValidator>();
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

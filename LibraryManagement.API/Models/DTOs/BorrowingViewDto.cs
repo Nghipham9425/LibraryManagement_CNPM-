@@ -15,6 +15,7 @@ namespace LibraryManagement.API.DTOs
         
         // User information (for admin)
         public string? UserName { get; set; }
+        public string? CardNumber { get; set; } // Mã thẻ thư viện
         public int? LibraryCardStatus { get; set; }
         
         // Book information for display

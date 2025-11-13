@@ -22,10 +22,13 @@ namespace LibraryManagement.API.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            
             modelBuilder.Entity<BookAuthor>()
                 .HasKey(ba => new { ba.BookId, ba.AuthorId });
+            
             modelBuilder.Entity<BookGenre>()
                 .HasKey(bg => new { bg.BookId, bg.GenreId });
+            
             modelBuilder.Entity<Author>().ToTable("Authors");
         }
     }

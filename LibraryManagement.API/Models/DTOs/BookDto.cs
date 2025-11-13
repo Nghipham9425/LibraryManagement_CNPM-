@@ -12,6 +12,10 @@ namespace LibraryManagement.API.Models
         public string? Description { get; set; }
         public List<BookItem> BookItems { get; set; } = new List<BookItem>();
         public List<BookAuthorDto> BookAuthors { get; set; } = new List<BookAuthorDto>();
+        
+        // Số lượng sách
+        public int TotalCopies { get; set; } // Tổng số bản
+        public int AvailableCopies { get; set; } // Số bản còn có thể mượn
     }
 
     public class BookAuthorDto

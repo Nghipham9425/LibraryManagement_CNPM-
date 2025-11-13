@@ -21,6 +21,7 @@ namespace LibraryManagement.API.Repositories
             .ThenInclude(ba => ba.Author)
             .Include(b => b.BookGenres)
             .ThenInclude(bg => bg.Genre)
+            .Include(b => b.BookItems) // Cần load BookItems để tính số lượng
             .ToListAsync();
         public async Task<Book?> GetByIdAsync(int id) => await _context.Books
             .Include(b => b.BookAuthors)

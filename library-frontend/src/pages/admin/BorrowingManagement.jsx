@@ -165,6 +165,7 @@ const BorrowingManagement = () => {
                     <tr>
                       <th>ID</th>
                       <th>Người mượn</th>
+                      <th>Thẻ thư viện</th>
                       <th>Sách</th>
                       <th>Mã kiểm soát</th>
                       <th>Ngày mượn</th>
@@ -176,13 +177,16 @@ const BorrowingManagement = () => {
                   <tbody>
                     {borrowings.length === 0 ? (
                       <tr>
-                        <td colSpan="8" className="text-center">Không có dữ liệu</td>
+                        <td colSpan="9" className="text-center">Không có dữ liệu</td>
                       </tr>
                     ) : (
                       borrowings.map((b) => (
                         <tr key={b.id} className={isOverdue(b.dueDate, b.status) ? 'table-danger' : ''}>
                           <td>{b.id}</td>
                           <td>{b.userName || 'N/A'}</td>
+                          <td>
+                            <strong>{b.cardNumber || 'N/A'}</strong>
+                          </td>
                           <td>{b.bookItem?.book?.title || 'N/A'}</td>
                           <td>{b.bookItem?.controlNumber || 'N/A'}</td>
                           <td>{formatDate(b.borrowDate)}</td>
@@ -194,32 +198,32 @@ const BorrowingManagement = () => {
                           </td>
                           <td>{getStatusBadge(b.status)}</td>
                           <td>
-                            <Button
-                              size="sm"
-                              variant="info"
-                              className="me-2"
-                              onClick={() => handleViewDetail(b.id)}
-                            >
-                              <FaEye /> Chi tiết
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="warning"
-                              className="me-2"
-                              onClick={() => {
-                                const days = prompt('Nhập số ngày gia hạn:', '7');
-                                if (days) handleExtend(b.id, parseInt(days));
-                              }}
-                            >
-                              <FaCalendarAlt /> Gia hạn
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="success"
-                              onClick={() => handleReturn(b.id)}
-                            >
-                              <FaUndo /> Trả sách
-                            </Button>
+                            <div className="d-flex flex-column gap-1">
+                              <Button
+                                size="sm"
+                                variant="info"
+                                onClick={() => handleViewDetail(b.id)}
+                              >
+                                <FaEye /> Chi tiết
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="warning"
+                                onClick={() => {
+                                  const days = prompt('Nhập số ngày gia hạn:', '7');
+                                  if (days) handleExtend(b.id, parseInt(days));
+                                }}
+                              >
+                                <FaCalendarAlt /> Gia hạn
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="success"
+                                onClick={() => handleReturn(b.id)}
+                              >
+                                <FaUndo /> Trả sách
+                              </Button>
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -242,6 +246,7 @@ const BorrowingManagement = () => {
                     <tr>
                       <th>ID</th>
                       <th>Người mượn</th>
+                      <th>Thẻ thư viện</th>
                       <th>Sách</th>
                       <th>Mã kiểm soát</th>
                       <th>Ngày mượn</th>
@@ -253,7 +258,7 @@ const BorrowingManagement = () => {
                   <tbody>
                     {borrowings.length === 0 ? (
                       <tr>
-                        <td colSpan="8" className="text-center">Không có dữ liệu</td>
+                        <td colSpan="9" className="text-center">Không có dữ liệu</td>
                       </tr>
                     ) : (
                       borrowings.map((b) => {
@@ -262,6 +267,9 @@ const BorrowingManagement = () => {
                           <tr key={b.id} className="table-danger">
                             <td>{b.id}</td>
                             <td>{b.userName || 'N/A'}</td>
+                            <td>
+                              <strong>{b.cardNumber || 'N/A'}</strong>
+                            </td>
                             <td>{b.bookItem?.book?.title || 'N/A'}</td>
                             <td>{b.bookItem?.controlNumber || 'N/A'}</td>
                             <td>{formatDate(b.borrowDate)}</td>
@@ -270,32 +278,32 @@ const BorrowingManagement = () => {
                               <Badge bg="danger">{overdueDays} ngày</Badge>
                             </td>
                             <td>
-                              <Button
-                                size="sm"
-                                variant="info"
-                                className="me-2"
-                                onClick={() => handleViewDetail(b.id)}
-                              >
-                                <FaEye /> Chi tiết
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="warning"
-                                className="me-2"
-                                onClick={() => {
-                                  const days = prompt('Nhập số ngày gia hạn:', '7');
-                                  if (days) handleExtend(b.id, parseInt(days));
-                                }}
-                              >
-                                <FaCalendarAlt /> Gia hạn
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="success"
-                                onClick={() => handleReturn(b.id)}
-                              >
-                                <FaUndo /> Trả sách
-                              </Button>
+                              <div className="d-flex flex-column gap-1">
+                                <Button
+                                  size="sm"
+                                  variant="info"
+                                  onClick={() => handleViewDetail(b.id)}
+                                >
+                                  <FaEye /> Chi tiết
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="warning"
+                                  onClick={() => {
+                                    const days = prompt('Nhập số ngày gia hạn:', '7');
+                                    if (days) handleExtend(b.id, parseInt(days));
+                                  }}
+                                >
+                                  <FaCalendarAlt /> Gia hạn
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="success"
+                                  onClick={() => handleReturn(b.id)}
+                                >
+                                  <FaUndo /> Trả sách
+                                </Button>
+                              </div>
                             </td>
                           </tr>
                         );
@@ -319,6 +327,7 @@ const BorrowingManagement = () => {
                     <tr>
                       <th>ID</th>
                       <th>Người mượn</th>
+                      <th>Thẻ thư viện</th>
                       <th>Sách</th>
                       <th>Mã kiểm soát</th>
                       <th>Ngày mượn</th>
@@ -331,13 +340,16 @@ const BorrowingManagement = () => {
                   <tbody>
                     {borrowings.length === 0 ? (
                       <tr>
-                        <td colSpan="9" className="text-center">Không có dữ liệu</td>
+                        <td colSpan="10" className="text-center">Không có dữ liệu</td>
                       </tr>
                     ) : (
                       borrowings.map((b) => (
                         <tr key={b.id}>
                           <td>{b.id}</td>
                           <td>{b.userName || 'N/A'}</td>
+                          <td>
+                            <strong>{b.cardNumber || 'N/A'}</strong>
+                          </td>
                           <td>{b.bookItem?.book?.title || 'N/A'}</td>
                           <td>{b.bookItem?.controlNumber || 'N/A'}</td>
                           <td>{formatDate(b.borrowDate)}</td>

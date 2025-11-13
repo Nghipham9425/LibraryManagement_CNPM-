@@ -1,5 +1,6 @@
 using AutoMapper;
 using LibraryManagement.API.Models;
+using LibraryManagement.API.Models.DTOs;
 
 namespace LibraryManagement.API.Mappers
 {
@@ -23,10 +24,16 @@ namespace LibraryManagement.API.Mappers
                             AuthorName = ba.Author != null ? ba.Author.Name : "Unknown Author"
                         }).ToList()
                         : new List<BookAuthorDto>()
-                ));
+                ))
+                .ForMember(dest => dest.TotalCopies, opt => opt.Ignore()) // Tính sau trong Service
+                .ForMember(dest => dest.AvailableCopies, opt => opt.Ignore()); // Tính sau trong Service
 
             CreateMap<Author, AuthorDto>()
                 .ForMember(dest => dest.BookCount, opt => opt.MapFrom(src => src.BookAuthors != null ? src.BookAuthors.Count : 0));
+
+            // BookItem mappings
+            CreateMap<BookItem, BookItemDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status));
 
             // DTO to Entity mappings
             CreateMap<BookInputDto, Book>()
