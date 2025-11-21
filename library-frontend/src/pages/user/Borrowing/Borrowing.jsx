@@ -1,16 +1,44 @@
+
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { Card, Button, Container, Tabs, Tab, Table, Modal, Form, Row, Col, Badge, Spinner, Alert } from 'react-bootstrap'
 import { FaPlus, FaExchangeAlt, FaRedo, FaCheck, FaInfoCircle } from 'react-icons/fa'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
 import { borrowingAPI, bookAPI } from '../../../apis'
+import libraryCardAPI from '../../../apis/libraryCardAPI'
 import { useAuth } from '../../../contexts/AuthContext'
 
-// Get library card ID from authenticated user
+// Custom hook to get library card ID
 const useLibraryCardId = () => {
+  const [libraryCardId, setLibraryCardId] = useState(null)
   const { user } = useAuth()
-  // User.Id = LibraryCard.Id
-  return user?.id || 1
+
+  useEffect(() => {
+    if (!user) {
+      setLibraryCardId(null)
+      return
+    }
+
+    let isMounted = true
+    
+    libraryCardAPI.getMyCard()
+      .then(card => {
+        if (isMounted) setLibraryCardId(card.id)
+      })
+      .catch(error => {
+        if (isMounted) {
+          console.error('Error fetching library card:', error)
+          if (error.response?.status === 404) {
+            toast.error('Bạn chưa có thẻ thư viện. Vui lòng đăng ký thẻ!')
+          }
+          setLibraryCardId(null)
+        }
+      })
+
+    return () => { isMounted = false }
+  }, [user])
+
+  return libraryCardId
 }
 
 const StatusBadge = ({ dueDate }) => {
@@ -33,6 +61,8 @@ const Borrowing = () => {
   const [days, setDays] = useState(15)
 
   const refresh = useCallback(async () => {
+    if (!libraryCardId) return
+    
     setLoading(true)
     try {
       const [a, h, o] = await Promise.all([
@@ -43,14 +73,19 @@ const Borrowing = () => {
       setActive(a)
       setHistory(h)
       setOverdue(o)
+    } catch (error) {
+      console.error('Error fetching borrowings:', error)
+      toast.error('Không thể tải danh sách mượn sách')
     } finally {
       setLoading(false)
     }
   }, [libraryCardId])
 
   useEffect(() => {
-    refresh()
-  }, [refresh])
+    if (libraryCardId) {
+      refresh()
+    }
+  }, [libraryCardId, refresh])
 
   const openBorrow = async () => {
     setShowBorrow(true)
@@ -221,6 +256,16 @@ const Borrowing = () => {
   )
 
   const { user } = useAuth()
+
+  // Show loading if library card not loaded yet
+  if (!libraryCardId) {
+    return (
+      <Container fluid className="py-5 text-center">
+        <Spinner animation="border" variant="primary" />
+        <p className="mt-3 text-muted">Đang tải thông tin thẻ thư viện...</p>
+      </Container>
+    )
+  }
 
   return (
     <Container fluid>

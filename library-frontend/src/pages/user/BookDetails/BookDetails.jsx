@@ -95,13 +95,19 @@ const BookDetails = () => {
         Days: borrowDays
       });
 
-      toast.success(`Mượn sách "${book.title}" thành công! 🎉`);
+      toast.success(`Mượn sách "${book.title}" thành công! 🎉`, { autoClose: 2000 });
       setShowBorrowModal(false);
       
-      // Optionally navigate to borrowing page
+      // Navigate to borrowing page to show updated list
       setTimeout(() => {
-        navigate('/borrowing');
-      }, 1500);
+        navigate('/borrowing', { 
+          state: { 
+            justBorrowed: true,
+            bookTitle: book.title,
+            timestamp: Date.now() // Add timestamp to force re-render
+          } 
+        });
+      }, 1000);
     } catch (err) {
       toast.error(err.response?.data?.message || 'Lỗi khi mượn sách');
     } finally {
@@ -181,19 +187,32 @@ const BookDetails = () => {
           </Card>
         </Col>
         <Col lg={8}>
-          <Card className="shadow-sm border-0">
+          <Card className="shadow-sm border-0 mb-4">
             <Card.Body className="p-4">
               <h1 className="display-5 fw-bold mb-3">{book.title}</h1>
 
               <div className="mb-3">
-                <Badge bg="secondary" className="me-2">
-                  <FaUser className="me-1" />
-                  {book.author?.name || 'Chưa rõ tác giả'}
-                </Badge>
-                <Badge bg="info">
-                  <FaTag className="me-1" />
-                  {book.genre?.name || 'Chưa phân loại'}
-                </Badge>
+                {book.bookAuthors && book.bookAuthors.length > 0 ? (
+                  book.bookAuthors.map((author, index) => (
+                    <Badge key={index} bg="secondary" className="me-2">
+                      <FaUser className="me-1" />
+                      {author.authorName}
+                    </Badge>
+                  ))
+                ) : (
+                  <Badge bg="secondary" className="me-2">
+                    <FaUser className="me-1" />
+                    Chưa rõ tác giả
+                  </Badge>
+                )}
+                {book.genres && book.genres.length > 0 && (
+                  book.genres.map((genre, index) => (
+                    <Badge key={index} bg="info" className="me-2">
+                      <FaTag className="me-1" />
+                      {genre}
+                    </Badge>
+                  ))
+                )}
               </div>
 
               {book.publicationYear && (
@@ -223,6 +242,23 @@ const BookDetails = () => {
               )}
             </Card.Body>
           </Card>
+
+          {/* Author Information Card */}
+          {book.bookAuthors && book.bookAuthors.length > 0 && (
+            <Card className="shadow-sm border-0">
+              <Card.Body className="p-4">
+                <h3 className="h4 fw-bold mb-3">
+                  <FaUser className="me-2 text-primary" />
+                  Thông tin tác giả
+                </h3>
+                {book.bookAuthors.map((author, index) => (
+                  <div key={index} className={index > 0 ? 'mt-3 pt-3 border-top' : ''}>
+                    <h5 className="fw-semibold text-primary">{author.authorName}</h5>
+                  </div>
+                ))}
+              </Card.Body>
+            </Card>
+          )}
         </Col>
       </Row>
 

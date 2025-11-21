@@ -1,53 +1,61 @@
 import { Card, Row, Col, Container } from 'react-bootstrap';
 import { FaBook, FaUsers, FaExchangeAlt, FaCheckCircle } from 'react-icons/fa';
-// import { useState, useEffect } from 'react';
-// import { getDashboardStats } from '@/apis/dashboard';
+import { useState, useEffect } from 'react';
+import { getDashboardStats } from '../../../apis/dashboard';
 
 const Dashboard = () => {
-  // const [stats, setStats] = useState({
-  //   totalBooks: 0,
-  //   totalMembers: 0,
-  //   borrowingCount: 0,
-  //   returnsToday: 0,
-  // });
+  const [stats, setStats] = useState({
+    totalBooks: 0,
+    totalMembers: 0,
+    totalLibraryCards: 0,
+    borrowingCount: 0,
+    returnsToday: 0,
+  });
 
-  // useEffect(() => {
-  //   const fetchStats = async () => {
-  //     try {
-  //     const data = await getDashboardStats();
-  //     setStats(data);
-  //   } catch (error) {
-  //     console.error('Failed to fetch stats', error);
-  //   }
-  // };
-  // fetchStats();
-  // }, []);
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await getDashboardStats();
+        setStats(data);
+      } catch (error) {
+        console.error('Failed to fetch stats', error);
+      }
+    };
+    fetchStats();
+  }, []);
 
   const statCards = [
     {
       title: 'Tổng Số Sách',
-      value: 0, // stats.totalBooks,
+      value: stats.totalBooks,
       icon: FaBook,
       color: '#0d6efd',
       bgColor: 'rgba(13, 110, 253, 0.1)',
     },
     {
       title: 'Tổng Thành Viên',
-      value: 0, // stats.totalMembers,
+      value: stats.totalMembers,
       icon: FaUsers,
       color: '#198754',
       bgColor: 'rgba(25, 135, 84, 0.1)',
     },
     {
+      title: 'Thẻ Thư Viện',
+      value: stats.totalLibraryCards,
+      icon: FaUsers,
+      color: '#6f42c1',
+      bgColor: 'rgba(111, 66, 193, 0.1)',
+    },
+    {
       title: 'Đang Mượn',
-      value: 0, // stats.borrowingCount,
+      value: stats.borrowingCount,
       icon: FaExchangeAlt,
       color: '#ffc107',
       bgColor: 'rgba(255, 193, 7, 0.1)',
     },
     {
       title: 'Trả Hôm Nay',
-      value: 0, // stats.returnsToday,
+      value: stats.returnsToday,
       icon: FaCheckCircle,
       color: '#0dcaf0',
       bgColor: 'rgba(13, 202, 240, 0.1)',

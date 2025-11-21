@@ -1,7 +1,7 @@
 
 import { Badge, Button } from 'react-bootstrap'
 import { FaTimes, FaBook, FaCalendar, FaBuilding, FaBarcode, FaExternalLinkAlt } from 'react-icons/fa'
-import { motion, AnimatePresence } from 'framer-motion'
+import { AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 
