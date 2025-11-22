@@ -1,9 +1,10 @@
 
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import { Card, Button, Container, Tabs, Tab, Table, Modal, Form, Row, Col, Badge, Spinner, Alert } from 'react-bootstrap'
-import { FaPlus, FaExchangeAlt, FaRedo, FaCheck, FaInfoCircle } from 'react-icons/fa'
+import { FaPlus, FaExchangeAlt, FaRedo, FaCheck, FaInfoCircle, FaExclamationTriangle, FaTools } from 'react-icons/fa'
 import { format } from 'date-fns'
 import { toast } from 'react-toastify'
+import { useLocation } from 'react-router-dom'
 import { borrowingAPI, bookAPI } from '../../../apis'
 import libraryCardAPI from '../../../apis/libraryCardAPI'
 import { useAuth } from '../../../contexts/AuthContext'
@@ -41,8 +42,20 @@ const useLibraryCardId = () => {
   return libraryCardId
 }
 
-const StatusBadge = ({ dueDate }) => {
+const StatusBadge = ({ dueDate, status }) => {
+  // Status: 0=Borrowed, 1=Returned, 2=Lost, 3=Damaged
   const isOverdue = useMemo(() => new Date(dueDate) < new Date(), [dueDate])
+  
+  if (status === 2 || status === 'Lost') {
+    return <Badge bg="danger">Mất</Badge>
+  }
+  if (status === 3 || status === 'Damaged') {
+    return <Badge bg="warning" text="dark">Hỏng</Badge>
+  }
+  if (status === 1 || status === 'Returned') {
+    return <Badge bg="secondary">Đã trả</Badge>
+  }
+  
   return (
     <Badge bg={isOverdue ? 'danger' : 'success'}>{isOverdue ? 'Quá hạn' : 'Trong hạn'}</Badge>
   )
@@ -81,11 +94,22 @@ const Borrowing = () => {
     }
   }, [libraryCardId])
 
+  const location = useLocation()
+
   useEffect(() => {
     if (libraryCardId) {
       refresh()
     }
   }, [libraryCardId, refresh])
+
+  // Listen for navigation state changes (after borrow from BookDetails)
+  useEffect(() => {
+    if (location.state?.justBorrowed && libraryCardId) {
+      refresh()
+      // Clear the state to prevent repeated refreshes
+      window.history.replaceState({}, document.title)
+    }
+  }, [location.state, libraryCardId, refresh])
 
   const openBorrow = async () => {
     setShowBorrow(true)
@@ -145,12 +169,41 @@ const Borrowing = () => {
   }
 
   const doRenew = async (borrowingId) => {
+    // Find the borrowing to check renewCount
+    const borrowing = [...active, ...overdue].find(b => b.id === borrowingId)
+    if (borrowing && borrowing.renewCount >= 1) {
+      toast.error('Phiếu mượn này đã được gia hạn rồi. Mỗi phiếu chỉ được gia hạn 1 lần!')
+      return
+    }
+    
     try {
       await borrowingAPI.renew({ BorrowingId: borrowingId, ExtendDays: 7 })
       toast.success('Gia hạn sách thêm 7 ngày thành công! 📅')
       await refresh()
     } catch (err) {
       toast.error(err.response?.data?.message || 'Lỗi khi gia hạn')
+    }
+  }
+
+  const doReportLost = async (borrowingId) => {
+    if (!window.confirm('Xác nhận báo mất sách này? Thẻ thư viện sẽ bị vô hiệu hóa cho đến khi bồi thường.')) return
+    try {
+      await borrowingAPI.reportLost(borrowingId)
+      toast.warning('Đã báo mất sách. Thẻ thư viện tạm thời bị vô hiệu hóa.')
+      await refresh()
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Lỗi khi báo mất sách')
+    }
+  }
+
+  const doReportDamaged = async (borrowingId) => {
+    if (!window.confirm('Xác nhận báo hỏng sách này? Thẻ thư viện sẽ bị vô hiệu hóa cho đến khi bồi thường.')) return
+    try {
+      await borrowingAPI.reportDamaged(borrowingId)
+      toast.warning('Đã báo hỏng sách. Thẻ thư viện tạm thời bị vô hiệu hóa.')
+      await refresh()
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Lỗi khi báo hỏng sách')
     }
   }
 
@@ -235,17 +288,37 @@ const Borrowing = () => {
               </td>
               <td>{b.borrowDate ? format(new Date(b.borrowDate), 'dd/MM/yyyy') : '—'}</td>
               <td>{b.dueDate ? format(new Date(b.dueDate), 'dd/MM/yyyy') : '—'}</td>
-              <td><StatusBadge dueDate={b.dueDate} /></td>
+              <td><StatusBadge dueDate={b.dueDate} status={b.status} /></td>
               {showActions && (
                 <td>
-                  <div className="d-flex gap-2">
-                    <Button size="sm" variant="outline-secondary" onClick={() => doRenew(b.id)}>
-                      <FaRedo className="me-1" /> Gia hạn
-                    </Button>
-                    <Button size="sm" variant="success" onClick={() => doReturn(b.id)}>
-                      <FaCheck className="me-1" /> Trả
-                    </Button>
-                  </div>
+                  {(b.status === 0 || b.status === 'Borrowed') ? (
+                    <div className="d-flex flex-column gap-1">
+                      <div className="d-flex gap-1">
+                        <Button 
+                          size="sm" 
+                          variant="outline-secondary" 
+                          onClick={() => doRenew(b.id)}
+                          disabled={b.renewCount >= 1}
+                          title={b.renewCount >= 1 ? 'Đã gia hạn rồi (tối đa 1 lần)' : 'Gia hạn thêm 7 ngày'}
+                        >
+                          <FaRedo className="me-1" /> Gia hạn {b.renewCount >= 1 && '(đã dùng)'}
+                        </Button>
+                        <Button size="sm" variant="success" onClick={() => doReturn(b.id)}>
+                          <FaCheck className="me-1" /> Trả
+                        </Button>
+                      </div>
+                      <div className="d-flex gap-1">
+                        <Button size="sm" variant="outline-danger" onClick={() => doReportLost(b.id)}>
+                          <FaExclamationTriangle className="me-1" /> Báo mất
+                        </Button>
+                        <Button size="sm" variant="outline-warning" onClick={() => doReportDamaged(b.id)}>
+                          <FaTools className="me-1" /> Báo hỏng
+                        </Button>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="text-muted">—</span>
+                  )}
                 </td>
               )}
             </tr>

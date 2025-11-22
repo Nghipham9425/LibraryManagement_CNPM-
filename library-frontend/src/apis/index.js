@@ -140,6 +140,14 @@ export const borrowingAPI = {
     const response = await api.post("/borrowings/renew", data)
     return response.data
   },
+  reportLost: async (borrowingId) => {
+    const response = await api.post(`/borrowings/${borrowingId}/report-lost`)
+    return response.data
+  },
+  reportDamaged: async (borrowingId) => {
+    const response = await api.post(`/borrowings/${borrowingId}/report-damaged`)
+    return response.data
+  },
 }
 
 export const userAPI = {
@@ -205,6 +213,15 @@ export const bookItemAPI = {
   // Xóa bản sao
   delete: async (bookId, itemId) => {
     const response = await api.delete(`/books/${bookId}/items/${itemId}`)
+    return response.data
+  },
+}
+
+export const reportAPI = {
+  // Get damaged/lost books report
+  getDamagedBooks: async (year) => {
+    const url = year ? `/reports/damaged-books?year=${year}` : '/reports/damaged-books'
+    const response = await api.get(url)
     return response.data
   },
 }

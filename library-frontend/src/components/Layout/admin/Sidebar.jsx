@@ -1,6 +1,6 @@
 import { Nav } from "react-bootstrap"
 import { NavLink, useLocation } from "react-router-dom"
-import { FaHome, FaBook, FaUsers, FaExchangeAlt, FaTags, FaIdCard } from "react-icons/fa"
+import { FaHome, FaBook, FaUsers, FaExchangeAlt, FaTags, FaIdCard, FaChartBar } from "react-icons/fa"
 
 const Sidebar = () => {
   const location = useLocation()
@@ -13,6 +13,7 @@ const Sidebar = () => {
     { path: "/admin/borrowing", label: "Mượn trả", icon: FaExchangeAlt },
     { path: "/admin/members", label: "Thành viên", icon: FaUsers },
     { path: "/admin/library-cards", label: "Thẻ thư viện", icon: FaIdCard },
+    { path: "/admin/reports", label: "Báo cáo", icon: FaChartBar },
   ]
 
   const isActive = (path) => {
@@ -26,11 +27,13 @@ const Sidebar = () => {
     <div
       style={{
         width: "250px",
-        height: "500px",
+        height: "100vh",
         backgroundColor: "#fff",
         borderRight: "1px solid #e5e7eb",
         paddingTop: "1.5rem",
-        overflowY: "auto",
+        paddingBottom: "1.5rem",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       {/* User Profile Section */}
@@ -89,7 +92,7 @@ const Sidebar = () => {
       </div>
 
       {/* Navigation Menu */}
-      <Nav className="flex-column px-3">
+      <Nav className="flex-column px-3" style={{ flex: 1, overflowY: "auto" }}>
         {menuItems.map((item) => {
           const active = isActive(item.path)
           return (
