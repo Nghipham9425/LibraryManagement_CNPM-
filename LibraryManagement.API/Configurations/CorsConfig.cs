@@ -13,8 +13,9 @@ namespace LibraryManagement.API.Configurations
                     policy.WithOrigins(
                             "http://localhost:5173",           // Development
                             "http://localhost:5175",           // Development  
-                            "https://library-management-cnpm.vercel.app",  // Production
-                            "https://library-management-*.vercel.app"      // Preview deployments
+                            "https://library-management-cnpm.vercel.app",  // Vercel Frontend
+                            "https://library-management-*.vercel.app",     // Vercel Preview
+                            "https://librarymanagement-cnpm.onrender.com"  // Render Frontend
                         )
                           .AllowAnyHeader()
                           .AllowAnyMethod()

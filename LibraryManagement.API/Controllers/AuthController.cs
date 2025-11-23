@@ -57,8 +57,9 @@ namespace LibraryManagement.API.Controllers
             Response.Cookies.Append("accessToken", token, new CookieOptions
             {
                 HttpOnly = true,
-                Secure = false, // true in production with HTTPS
-                SameSite = SameSiteMode.Lax,
+                Secure = true,  // HTTPS in production
+                SameSite = SameSiteMode.None,  // Allow cross-origin
+                Path = "/",
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
             });
             
