@@ -128,6 +128,18 @@ export const borrowingAPI = {
     const response = await api.get(`/borrowings/overdue/${libraryCardId}`)
     return response.data
   },
+  getAll: async (params = {}) => {
+    const response = await api.get('/borrowings/all', { params })
+    return response.data
+  },
+  getById: async (id) => {
+    const response = await api.get(`/borrowings/${id}`)
+    return response.data
+  },
+  getStats: async () => {
+    const response = await api.get('/borrowings/stats')
+    return response.data
+  },
   borrow: async (data) => {
     const response = await api.post("/borrowings/borrow", data)
     return response.data
