@@ -10,7 +10,12 @@ namespace LibraryManagement.API.Configurations
             {
                 options.AddPolicy("AllowReactApp", policy =>
                 {
-                    policy.WithOrigins("http://localhost:5173", "http://localhost:5175")
+                    policy.WithOrigins(
+                            "http://localhost:5173",           // Development
+                            "http://localhost:5175",           // Development  
+                            "https://library-management-cnpm.vercel.app",  // Production
+                            "https://library-management-*.vercel.app"      // Preview deployments
+                        )
                           .AllowAnyHeader()
                           .AllowAnyMethod()
                           .AllowCredentials();
