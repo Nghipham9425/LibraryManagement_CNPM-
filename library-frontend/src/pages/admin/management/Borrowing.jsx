@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Container, Row, Col, Tabs, Tab, Form, InputGroup, Table, Button, Badge, Spinner, Alert } from 'react-bootstrap';
 import { FaSearch, FaCalendarAlt, FaUndo, FaEye } from 'react-icons/fa';
-import axios from 'axios';
 import BorrowingDetailModal from '../../../components/admin/BorrowingDetailModal';
+import { borrowingAPI } from '../../../apis/index';
 import "../../../styles/BorrowingManagement.css"
 
 const BorrowingManagement = () => {
@@ -17,8 +17,8 @@ const BorrowingManagement = () => {
 
   const fetchStats = useCallback(async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/borrowings/stats');
-      setStats(response.data);
+      const response = await borrowingAPI.getStats();
+      setStats(response);
     } catch (err) {
       console.error('Error fetching stats:', err);
     }
@@ -34,10 +34,11 @@ const BorrowingManagement = () => {
     setError('');
     try {
       const statusParam = activeTab === 'active' ? 'active' : activeTab === 'overdue' ? 'overdue' : 'returned';
-      const response = await axios.get('http://localhost:5000/api/borrowings/all', {
-        params: { status: statusParam, search: searchTerm }
+      const response = await borrowingAPI.getAll({
+        status: statusParam,
+        search: searchTerm
       });
-      setBorrowings(response.data);
+      setBorrowings(response);
     } catch (err) {
       setError('Không thể tải dữ liệu mượn trả');
       console.error('Error fetching borrowings:', err);
@@ -54,7 +55,7 @@ const BorrowingManagement = () => {
   const handleReturn = async (id) => {
     if (!confirm('Xác nhận trả sách cho phiếu mượn này?')) return;
     try {
-      await axios.post(`http://localhost:5000/api/borrowings/${id}/return-admin`);
+      await borrowingAPI.returnBook({ borrowingId: id });
       fetchBorrowings();
       fetchStats();
       alert('Trả sách thành công!');
@@ -65,8 +66,8 @@ const BorrowingManagement = () => {
 
   const handleViewDetail = async (borrowingId) => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/borrowings/${borrowingId}`);
-      setSelectedBorrowing(response.data);
+      const response = await borrowingAPI.getById(borrowingId);
+      setSelectedBorrowing(response);
       setShowDetailModal(true);
     } catch (err) {
       alert('Không thể tải chi tiết: ' + (err.response?.data?.message || err.message));
