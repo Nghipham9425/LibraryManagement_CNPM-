@@ -32,3 +32,9 @@ public class UpdateLibraryCardDto
     public DateTime? ExpiryDate { get; set; }
     public CardStatus? Status { get; set; }
 }
+
+public class CompensateDto
+{
+    public decimal Amount { get; set; }
+    public string Notes { get; set; } = string.Empty;
+}

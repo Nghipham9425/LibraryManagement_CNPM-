@@ -13,11 +13,13 @@ namespace LibraryManagement.API.Controllers
     {
         private readonly AuthorService _authorService;
         private readonly IValidator<Author> _authorValidator;
+        private readonly ActivityLogService _activityLogService;
 
-        public AuthorsController(AuthorService authorService, IValidator<Author> authorValidator)
+        public AuthorsController(AuthorService authorService, IValidator<Author> authorValidator, ActivityLogService activityLogService)
         {
             _authorService = authorService;
             _authorValidator = authorValidator;
+            _activityLogService = activityLogService;
         }
 
         [HttpGet]
@@ -47,6 +49,10 @@ namespace LibraryManagement.API.Controllers
                 });
             }
             await _authorService.AddAuthorAsync(author);
+            
+            // Log activity
+            await _activityLogService.LogAsync("Create", "Author", author.Id, $"Đã thêm tác giả '{author.Name}'");
+            
             return CreatedAtAction(nameof(GetAuthor), new { id = author.Id }, author);
         }
 
@@ -68,13 +74,25 @@ namespace LibraryManagement.API.Controllers
                 });
             }
             await _authorService.UpdateAuthorAsync(author);
+            
+            // Log activity
+            await _activityLogService.LogAsync("Update", "Author", author.Id, $"Đã cập nhật tác giả '{author.Name}'");
+            
             return Ok(author);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAuthor(int id)
         {
+            // Get author name before delete
+            var author = await _authorService.GetAuthorByIdAsync(id);
+            var authorName = author?.Name ?? "Unknown";
+            
             await _authorService.DeleteAuthorAsync(id);
+            
+            // Log activity
+            await _activityLogService.LogAsync("Delete", "Author", id, $"Đã xóa tác giả '{authorName}'");
+            
             return NoContent();
         }
     }

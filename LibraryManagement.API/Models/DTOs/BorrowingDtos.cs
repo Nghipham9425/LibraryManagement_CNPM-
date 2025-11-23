@@ -29,4 +29,11 @@ namespace LibraryManagement.API.DTOs
         [Required]
         public int BorrowingId { get; set; }
     }
+
+    public class ExtendBorrowingDto
+    {
+        [Required]
+        [Range(1, 60)]
+        public int AdditionalDays { get; set; }
+    }
 }

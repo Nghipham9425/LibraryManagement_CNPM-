@@ -127,4 +127,22 @@ public class LibraryCardsController : ControllerBase
         var card = await _libraryCardService.RenewLibraryCardAsync(id, months);
         return Ok(card);
     }
+
+    // GET: api/librarycards/5/unpaid-fines
+    [HttpGet("{id}/unpaid-fines")]
+    [Authorize(Roles = "Admin,Librarian")]
+    public async Task<ActionResult> GetUnpaidFines(int id)
+    {
+        var fines = await _libraryCardService.GetUnpaidFinesAsync(id);
+        return Ok(fines);
+    }
+
+    // POST: api/librarycards/5/compensate
+    [HttpPost("{id}/compensate")]
+    [Authorize(Roles = "Admin,Librarian")]
+    public async Task<ActionResult<LibraryCardDto>> CompensateAndActivate(int id, [FromBody] CompensateDto dto)
+    {
+        var card = await _libraryCardService.CompensateAndActivateAsync(id, dto);
+        return Ok(card);
+    }
 }

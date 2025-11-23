@@ -102,14 +102,15 @@ namespace LibraryManagement.API.Services
             });
         }
 
-        public async Task NotifyReturnSuccessAsync(int libraryCardId, string bookTitle)
+        public async Task NotifyReturnSuccessAsync(int libraryCardId, int borrowingId, string bookTitle)
         {
             await CreateNotificationAsync(new CreateNotificationDto
             {
                 LibraryCardId = libraryCardId,
                 Title = "Trả sách thành công! ✅",
                 Message = $"Bạn đã trả sách \"{bookTitle}\" thành công. Cảm ơn bạn đã sử dụng dịch vụ!",
-                Type = "ReturnSuccess"
+                Type = "ReturnSuccess",
+                BorrowingId = borrowingId
             });
         }
 

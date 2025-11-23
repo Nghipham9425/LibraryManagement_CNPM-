@@ -22,7 +22,8 @@ namespace LibraryManagement.API.Controllers
         public async Task<IActionResult> GetStats()
         {
             var totalBooks = await _db.Books.CountAsync();
-            var totalMembers = 0; // await _db.LibraryCards.CountAsync();
+            var totalMembers = await _db.Users.CountAsync(u => u.IsActive);
+            var totalLibraryCards = await _db.LibraryCards.CountAsync();
             var borrowingCount = await _db.Borrowings.CountAsync(b => b.Status == BorrowingStatus.Borrowed);
             var returnsToday = await _db.Borrowings.CountAsync(b => b.ReturnDate.HasValue && b.ReturnDate.Value.Date == DateTime.UtcNow.Date);
 
@@ -30,6 +31,7 @@ namespace LibraryManagement.API.Controllers
             {
                 totalBooks,
                 totalMembers,
+                totalLibraryCards,
                 borrowingCount,
                 returnsToday
             });

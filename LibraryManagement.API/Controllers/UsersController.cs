@@ -12,10 +12,12 @@ namespace LibraryManagement.API.Controllers;
 public class UsersController : ControllerBase
 {
     private readonly UserService _userService;
+    private readonly ActivityLogService _activityLogService;
 
-    public UsersController(UserService userService)
+    public UsersController(UserService userService, ActivityLogService activityLogService)
     {
         _userService = userService;
+        _activityLogService = activityLogService;
     }
 
     [HttpGet]
@@ -62,6 +64,10 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> CreateUser([FromBody] CreateUserDto dto)
     {
         var user = await _userService.CreateUserAsync(dto);
+        
+        // Log activity
+        await _activityLogService.LogAsync("Create", "User", user.Id, $"Đã tạo người dùng '{user.UserName}' với role {user.Role}");
+        
         return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, user);
     }
 
@@ -74,6 +80,9 @@ public class UsersController : ControllerBase
         {
             return NotFound(new { message = "User not found" });
         }
+
+        // Log activity
+        await _activityLogService.LogAsync("Update", "User", id, $"Đã cập nhật thông tin người dùng '{user.UserName}'");
 
         return Ok(user);
     }
