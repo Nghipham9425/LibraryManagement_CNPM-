@@ -32,6 +32,7 @@ namespace LibraryManagement.API.Repositories
                     .ThenInclude(bi => bi.Book)
                     .ThenInclude(book => book.BookAuthors)
                     .ThenInclude(ba => ba.Author)
+                .Include(b => b.LibraryCard)
                 .OrderByDescending(b => b.BorrowDate)
                 .ToListAsync();
         }
@@ -39,11 +40,12 @@ namespace LibraryManagement.API.Repositories
         public async Task<List<Borrowing>> GetHistoryByCardAsync(int libraryCardId)
         {
             return await _db.Borrowings
-                .Where(b => b.LibraryCardId == libraryCardId && b.Status == BorrowingStatus.Returned)
+                .Where(b => b.LibraryCardId == libraryCardId && (b.Status == BorrowingStatus.Returned || b.Status == BorrowingStatus.Lost || b.Status == BorrowingStatus.Damaged))
                 .Include(b => b.BookItem)
                     .ThenInclude(bi => bi.Book)
                     .ThenInclude(book => book.BookAuthors)
                     .ThenInclude(ba => ba.Author)
+                .Include(b => b.LibraryCard)
                 .OrderByDescending(b => b.ReturnDate)
                 .ToListAsync();
         }
@@ -56,6 +58,7 @@ namespace LibraryManagement.API.Repositories
                     .ThenInclude(bi => bi.Book)
                     .ThenInclude(book => book.BookAuthors)
                     .ThenInclude(ba => ba.Author)
+                .Include(b => b.LibraryCard)
                 .OrderBy(b => b.DueDate)
                 .ToListAsync();
         }

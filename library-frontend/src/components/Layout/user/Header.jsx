@@ -81,7 +81,7 @@ const UserHeader = () => {
           <Col xs={12} md={4} className="text-center text-md-end">
             {user ? (
               <div className="d-flex align-items-center justify-content-center justify-content-md-end gap-3">
-                <NotificationBell libraryCardId={user?.id || 1} />
+                <NotificationBell libraryCardId={user?.libraryCardId || 1} />
                 <Dropdown>
                   <Dropdown.Toggle variant="outline-primary" className="rounded-pill">
                     <FaUserCircle className="me-1" /> {user.userName}

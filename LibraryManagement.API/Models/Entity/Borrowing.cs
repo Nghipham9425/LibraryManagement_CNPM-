@@ -31,5 +31,6 @@ namespace LibraryManagement.API.Models
         public DateTime DueDate { get; set; } // Ngày hết hạn (tối đa 15 ngày)
         public DateTime? ReturnDate { get; set; } // Ngày trả (nullable)
         public BorrowingStatus Status { get; set; } = BorrowingStatus.Borrowed; // Tình trạng mượn
+        public int RenewCount { get; set; } = 0; // Số lần đã gia hạn (tối đa 1)
     }
 }

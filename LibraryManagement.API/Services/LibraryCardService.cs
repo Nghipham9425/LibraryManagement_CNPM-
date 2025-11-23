@@ -1,8 +1,10 @@
 using AutoMapper;
+using LibraryManagement.API.Data;
 using LibraryManagement.API.Models;
 using LibraryManagement.API.Models.DTOs;
 using LibraryManagement.API.Repositories;
 using LibraryManagement.API.Utils;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.API.Services;
 
@@ -10,15 +12,18 @@ public class LibraryCardService
 {
     private readonly LibraryCardRepository _libraryCardRepository;
     private readonly UserRepository _userRepository;
+    private readonly LibraryDbContext _db;
     private readonly IMapper _mapper;
 
     public LibraryCardService(
         LibraryCardRepository libraryCardRepository,
         UserRepository userRepository,
+        LibraryDbContext db,
         IMapper mapper)
     {
         _libraryCardRepository = libraryCardRepository;
         _userRepository = userRepository;
+        _db = db;
         _mapper = mapper;
     }
 
@@ -163,6 +168,78 @@ public class LibraryCardService
         card.Status = CardStatus.Active;
 
         var updatedCard = await _libraryCardRepository.UpdateAsync(card);
+        return _mapper.Map<LibraryCardDto>(updatedCard);
+    }
+
+    public async Task<object> GetUnpaidFinesAsync(int libraryCardId)
+    {
+        var unpaidFines = await _db.Fines
+            .Include(f => f.Borrowing)
+                .ThenInclude(b => b.BookItem)
+                .ThenInclude(bi => bi.Book)
+            .Where(f => f.Borrowing.LibraryCardId == libraryCardId && !f.IsPaid)
+            .Select(f => new
+            {
+                f.Id,
+                f.Amount,
+                f.Reason,
+                f.CreatedAt,
+                BookTitle = f.Borrowing.BookItem.Book.Title,
+                BorrowingId = f.BorrowingId
+            })
+            .ToListAsync();
+
+        var totalAmount = unpaidFines.Sum(f => f.Amount);
+
+        return new
+        {
+            Fines = unpaidFines,
+            TotalAmount = totalAmount,
+            Count = unpaidFines.Count
+        };
+    }
+
+    public async Task<LibraryCardDto> CompensateAndActivateAsync(int id, CompensateDto dto)
+    {
+        var card = await _libraryCardRepository.GetByIdAsync(id);
+        if (card == null)
+        {
+            throw new ApiException(404, "Thẻ thư viện không tồn tại");
+        }
+
+        if (card.Status != CardStatus.Inactive)
+        {
+            throw new ApiException(400, "Thẻ thư viện không ở trạng thái bị vô hiệu hóa");
+        }
+
+        // Get all unpaid fines for this card
+        var unpaidFines = await _db.Fines
+            .Include(f => f.Borrowing)
+            .Where(f => f.Borrowing.LibraryCardId == id && !f.IsPaid)
+            .ToListAsync();
+
+        // Calculate total unpaid amount
+        var totalUnpaidAmount = unpaidFines.Sum(f => f.Amount);
+
+        // Validate payment amount
+        if (dto.Amount < totalUnpaidAmount)
+        {
+            throw new ApiException(400, $"Số tiền bồi thường không đủ. Tổng phạt: {totalUnpaidAmount:N0} VND, Đã nhập: {dto.Amount:N0} VND");
+        }
+
+        // Reactivate the card
+        card.Status = CardStatus.Active;
+
+        // Mark all unpaid fines as paid
+        foreach (var fine in unpaidFines)
+        {
+            fine.IsPaid = true;
+            fine.PaidDate = DateTime.UtcNow;
+        }
+
+        var updatedCard = await _libraryCardRepository.UpdateAsync(card);
+        await _db.SaveChangesAsync();
+        
         return _mapper.Map<LibraryCardDto>(updatedCard);
     }
 }

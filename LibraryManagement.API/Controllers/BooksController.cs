@@ -16,12 +16,14 @@ namespace LibraryManagement.API.Controllers
         private readonly BookService _bookService;
         private readonly FluentValidation.IValidator<Book> _bookValidator;
         private readonly IMapper _mapper;
+        private readonly ActivityLogService _activityLogService;
 
-        public BooksController(BookService bookService, FluentValidation.IValidator<Book> bookValidator, IMapper mapper)
+        public BooksController(BookService bookService, FluentValidation.IValidator<Book> bookValidator, IMapper mapper, ActivityLogService activityLogService)
         {
             _bookService = bookService;
             _bookValidator = bookValidator;
             _mapper = mapper;
+            _activityLogService = activityLogService;
         }        [HttpGet]
         public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks() => Ok(await _bookService.GetAllBooksAsync());
 
@@ -60,6 +62,10 @@ namespace LibraryManagement.API.Controllers
             }
 
             await _bookService.AddBookAsync(book);
+            
+            // Log activity
+            await _activityLogService.LogAsync("Create", "Book", book.Id, $"Đã thêm sách '{book.Title}'");
+            
             return CreatedAtAction(nameof(GetBook), new { id = book.Id }, book);
         }
 
@@ -77,13 +83,24 @@ namespace LibraryManagement.API.Controllers
             }
 
             await _bookService.UpdateBookAsync(book);
+            
+            // Log activity
+            await _activityLogService.LogAsync("Update", "Book", id, $"Đã cập nhật sách '{book.Title}'");
+            
             return Ok(book);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteBook(int id)
         {
+            var book = await _bookService.GetBookByIdAsync(id);
+            var bookTitle = book?.Title ?? $"ID {id}";
+            
             await _bookService.DeleteBookAsync(id);
+            
+            // Log activity
+            await _activityLogService.LogAsync("Delete", "Book", id, $"Đã xóa sách '{bookTitle}'");
+            
             return NoContent();
         }
 

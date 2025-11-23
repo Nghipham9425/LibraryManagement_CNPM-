@@ -289,12 +289,12 @@ const BookDetails = () => {
             <Form.Control
               type="number"
               min="1"
-              max="60"
+              max="15"
               value={borrowDays}
-              onChange={(e) => setBorrowDays(Number(e.target.value))}
+              onChange={(e) => setBorrowDays(Math.min(15, Number(e.target.value)))}
             />
             <Form.Text className="text-muted">
-              Tối đa 60 ngày. Hạn trả dự kiến: {new Date(Date.now() + borrowDays * 24 * 60 * 60 * 1000).toLocaleDateString('vi-VN')}
+              Tối đa 15 ngày. Hạn trả dự kiến: {new Date(Date.now() + borrowDays * 24 * 60 * 60 * 1000).toLocaleDateString('vi-VN')}
             </Form.Text>
           </Form.Group>
 

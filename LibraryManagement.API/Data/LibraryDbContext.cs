@@ -1,4 +1,5 @@
 using LibraryManagement.API.Models;
+using LibraryManagement.API.Models.Entity;
 using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.API.Data
@@ -18,6 +19,9 @@ namespace LibraryManagement.API.Data
         public DbSet<User> Users { get; set; }
         public DbSet<RefreshToken> RefreshTokens { get; set; }
         public DbSet<Notification> Notifications { get; set; } // Thông báo
+        public DbSet<Fine> Fines { get; set; } // Tiền phạt/bồi thường
+        public DbSet<Setting> Settings { get; set; } // Cấu hình hệ thống
+        public DbSet<ActivityLog> ActivityLogs { get; set; } // Nhật ký hoạt động
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -26,6 +26,7 @@ import UserBorrowing from "./pages/user/Borrowing/Borrowing"
 import Profile from "./pages/user/Profile/Profile"
 import MyLibraryCard from "./pages/user/MyLibraryCard/MyLibraryCard"
 import LibraryCards from "./components/admin/LibraryCards/LibraryCards"
+import Reports from "./pages/admin/management/Reports"
 import "react-toastify/dist/ReactToastify.css"
 import "./App.css"
 
@@ -73,6 +74,7 @@ function App() {
             <Route path="borrowing" element={<Borrowing />} />
             <Route path="members" element={<Members />} />
             <Route path="library-cards" element={<LibraryCards />} />
+            <Route path="reports" element={<Reports />} />
           </Route>
         </Routes>
         <ToastContainer

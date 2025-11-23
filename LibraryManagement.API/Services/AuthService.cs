@@ -4,6 +4,7 @@ using LibraryManagement.API.Repositories;
 using BCrypt.Net;
 using LibraryManagement.API.Utils;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.API.Services
 {
@@ -99,6 +100,11 @@ namespace LibraryManagement.API.Services
         public async Task<User?> GetUserByIdAsync(int id)
         {
             return await _authRepository.GetUserByIdAsync(id);
+        }
+
+        public async Task<LibraryCard?> GetLibraryCardByUserIdAsync(int userId)
+        {
+            return await _db.LibraryCards.FirstOrDefaultAsync(lc => lc.UserId == userId);
         }
 
         public async Task Logout()

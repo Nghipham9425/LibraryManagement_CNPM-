@@ -57,6 +57,18 @@ const libraryCardAPI = {
     const response = await api.post(`/librarycards/${id}/renew?months=${months}`);
     return response.data;
   },
+
+  // Get unpaid fines for a library card (Admin/Librarian only)
+  getUnpaidFines: async (id) => {
+    const response = await api.get(`/librarycards/${id}/unpaid-fines`);
+    return response.data;
+  },
+
+  // Compensate and reactivate card (Admin/Librarian only)
+  compensate: async (id, data) => {
+    const response = await api.post(`/librarycards/${id}/compensate`, data);
+    return response.data;
+  },
 };
 
 export default libraryCardAPI;

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Container, Table, Button, Badge, Alert, Spinner } from 'react-bootstrap';
-import { FaPlus, FaEdit, FaTrash, FaSync } from 'react-icons/fa';
+import { FaPlus, FaEdit, FaTrash, FaSync, FaMoneyBillWave } from 'react-icons/fa';
 import libraryCardAPI from '../../../apis/libraryCardAPI';
 import CreateLibraryCardModal from './CreateLibraryCardModal';
 import EditLibraryCardModal from './EditLibraryCardModal';
+import CompensateModal from './CompensateModal';
 import Pagination from '../../Pagination';
 import usePagination from '../../../hooks/usePagination';
 
@@ -13,6 +14,7 @@ const LibraryCards = () => {
   const [error, setError] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showCompensateModal, setShowCompensateModal] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
 
   // Pagination
@@ -73,6 +75,17 @@ const LibraryCards = () => {
   const handleEditSuccess = (updatedCard) => {
     setCards(cards.map(card => card.id === updatedCard.id ? updatedCard : card));
     setShowEditModal(false);
+  };
+
+  const handleCompensate = (card) => {
+    setSelectedCard(card);
+    setShowCompensateModal(true);
+  };
+
+  const handleCompensateSuccess = (updatedCard) => {
+    setCards(cards.map(card => card.id === updatedCard.id ? updatedCard : card));
+    setShowCompensateModal(false);
+    alert('Xử lý bồi thường thành công! Thẻ đã được kích hoạt lại.');
   };
 
   const formatDate = (dateString) => {
@@ -171,6 +184,17 @@ const LibraryCards = () => {
                   >
                     <FaSync />
                   </Button>
+                  {card.status === 1 && (
+                    <Button
+                      variant="warning"
+                      size="sm"
+                      className="me-2"
+                      onClick={() => handleCompensate(card)}
+                      title="Xử lý bồi thường"
+                    >
+                      <FaMoneyBillWave />
+                    </Button>
+                  )}
                   <Button
                     variant="danger"
                     size="sm"
@@ -202,6 +226,13 @@ const LibraryCards = () => {
         onHide={() => setShowEditModal(false)}
         card={selectedCard}
         onSuccess={handleEditSuccess}
+      />
+
+      <CompensateModal
+        show={showCompensateModal}
+        onHide={() => setShowCompensateModal(false)}
+        card={selectedCard}
+        onSuccess={handleCompensateSuccess}
       />
     </Container>
   );

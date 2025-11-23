@@ -89,6 +89,7 @@ const BorrowingManagement = () => {
       case 0: return <Badge bg="warning">Đang mượn</Badge>;
       case 1: return <Badge bg="success">Đã trả</Badge>;
       case 2: return <Badge bg="danger">Mất sách</Badge>;
+      case 3: return <Badge bg="warning">Hỏng</Badge>;
       default: return <Badge bg="secondary">Unknown</Badge>;
     }
   };
@@ -210,11 +211,24 @@ const BorrowingManagement = () => {
                                 size="sm"
                                 variant="warning"
                                 onClick={() => {
-                                  const days = prompt('Nhập số ngày gia hạn:', '7');
-                                  if (days) handleExtend(b.id, parseInt(days));
+                                  if (b.renewCount >= 1) {
+                                    alert('Phiếu mượn này đã được gia hạn rồi (tối đa 1 lần)');
+                                    return;
+                                  }
+                                  const days = prompt('Nhập số ngày gia hạn (tối đa 7 ngày):', '7');
+                                  if (days) {
+                                    const numDays = parseInt(days);
+                                    if (numDays > 7) {
+                                      alert('Chỉ được gia hạn tối đa 7 ngày!');
+                                      return;
+                                    }
+                                    handleExtend(b.id, numDays);
+                                  }
                                 }}
+                                disabled={b.renewCount >= 1}
+                                title={b.renewCount >= 1 ? 'Đã gia hạn rồi' : 'Gia hạn thêm tối đa 7 ngày'}
                               >
-                                <FaCalendarAlt /> Gia hạn
+                                <FaCalendarAlt /> Gia hạn {b.renewCount >= 1 && '✓'}
                               </Button>
                               <Button
                                 size="sm"
@@ -288,21 +302,12 @@ const BorrowingManagement = () => {
                                 </Button>
                                 <Button
                                   size="sm"
-                                  variant="warning"
-                                  onClick={() => {
-                                    const days = prompt('Nhập số ngày gia hạn:', '7');
-                                    if (days) handleExtend(b.id, parseInt(days));
-                                  }}
-                                >
-                                  <FaCalendarAlt /> Gia hạn
-                                </Button>
-                                <Button
-                                  size="sm"
                                   variant="success"
                                   onClick={() => handleReturn(b.id)}
                                 >
                                   <FaUndo /> Trả sách
                                 </Button>
+                                <small className="text-danger">⚠️ Không thể gia hạn khi quá hạn</small>
                               </div>
                             </td>
                           </tr>

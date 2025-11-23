@@ -9,16 +9,24 @@ namespace LibraryManagement.API.Controllers
     public class BorrowingsController : ControllerBase
     {
         private readonly BorrowingService _service;
+        private readonly ActivityLogService _activityLogService;
 
-        public BorrowingsController(BorrowingService service)
+        public BorrowingsController(BorrowingService service, ActivityLogService activityLogService)
         {
             _service = service;
+            _activityLogService = activityLogService;
         }
 
         [HttpPost("borrow")]
         public async Task<IActionResult> Borrow([FromBody] BorrowRequestDto request)
         {
             var result = await _service.BorrowAsync(request);
+            
+            // Log activity - load book info manually if not included
+            var borrowing = await _service.GetByIdAsync(result.Id);
+            var bookTitle = borrowing?.BookItem?.Book?.Title ?? "Unknown";
+            await _activityLogService.LogAsync("Create", "Borrowing", result.Id, $"Đã mượn sách '{bookTitle}' - Phiếu mượn #{result.Id}");
+            
             return Ok(result);
         }
 
@@ -26,6 +34,12 @@ namespace LibraryManagement.API.Controllers
         public async Task<IActionResult> Return([FromBody] ReturnRequestDto request)
         {
             var result = await _service.ReturnAsync(request);
+            
+            // Log activity - load book info manually if not included
+            var borrowing = await _service.GetByIdAsync(result.Id);
+            var bookTitle = borrowing?.BookItem?.Book?.Title ?? "Unknown";
+            await _activityLogService.LogAsync("Update", "Borrowing", result.Id, $"Đã trả sách '{bookTitle}' - Phiếu mượn #{result.Id}");
+            
             return Ok(result);
         }
 
@@ -33,6 +47,7 @@ namespace LibraryManagement.API.Controllers
         public async Task<IActionResult> Renew([FromBody] RenewRequestDto request)
         {
             var result = await _service.RenewAsync(request);
+            // Không log Renew - ít quan trọng
             return Ok(result);
         }
 
@@ -81,9 +96,9 @@ namespace LibraryManagement.API.Controllers
         }
 
         [HttpPost("{id:int}/extend")]
-        public async Task<IActionResult> ExtendBorrowing(int id, [FromBody] int additionalDays)
+        public async Task<IActionResult> ExtendBorrowing(int id, [FromBody] ExtendBorrowingDto dto)
         {
-            var result = await _service.ExtendBorrowingAsync(id, additionalDays);
+            var result = await _service.ExtendBorrowingAsync(id, dto.AdditionalDays);
             return Ok(result);
         }
 
@@ -91,6 +106,32 @@ namespace LibraryManagement.API.Controllers
         public async Task<IActionResult> ReturnByAdmin(int id)
         {
             var result = await _service.ReturnByAdminAsync(id);
+            return Ok(result);
+        }
+
+        [HttpPost("{id:int}/report-lost")]
+        public async Task<IActionResult> ReportLost(int id)
+        {
+            var result = await _service.ReportLostAsync(id);
+            
+            // Log activity - load book info manually if not included
+            var borrowing = await _service.GetByIdAsync(result.Id);
+            var bookTitle = borrowing?.BookItem?.Book?.Title ?? "Unknown";
+            await _activityLogService.LogAsync("Update", "Borrowing", result.Id, $"Đã báo mất sách '{bookTitle}' - Phiếu mượn #{result.Id}");
+            
+            return Ok(result);
+        }
+
+        [HttpPost("{id:int}/report-damaged")]
+        public async Task<IActionResult> ReportDamaged(int id)
+        {
+            var result = await _service.ReportDamagedAsync(id);
+            
+            // Log activity - load book info manually if not included
+            var borrowing = await _service.GetByIdAsync(result.Id);
+            var bookTitle = borrowing?.BookItem?.Book?.Title ?? "Unknown";
+            await _activityLogService.LogAsync("Update", "Borrowing", result.Id, $"Đã báo hỏng sách '{bookTitle}' - Phiếu mượn #{result.Id}");
+            
             return Ok(result);
         }
     }

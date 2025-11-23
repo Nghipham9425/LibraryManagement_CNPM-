@@ -11,12 +11,14 @@ namespace LibraryManagement.API.Services
         private readonly BorrowingRepository _repo;
         private readonly LibraryDbContext _db;
         private readonly NotificationService _notificationService;
+        private readonly SettingsService _settingsService;
 
-        public BorrowingService(BorrowingRepository repo, LibraryDbContext db, NotificationService notificationService)
+        public BorrowingService(BorrowingRepository repo, LibraryDbContext db, NotificationService notificationService, SettingsService settingsService)
         {
             _repo = repo;
             _db = db;
             _notificationService = notificationService;
+            _settingsService = settingsService;
         }
 
         public async Task<Borrowing> BorrowAsync(BorrowRequestDto request)
@@ -37,26 +39,29 @@ namespace LibraryManagement.API.Services
             if (item.Status != BookItemStatus.Available)
                 throw new Utils.ApiException(400, "Bản sao sách không sẵn sàng cho mượn");
 
-            // Check if user is currently borrowing (chưa trả sách thì không mượn tiếp)
-            var hasActiveBorrowings = await _db.Borrowings
-                .AnyAsync(b => b.LibraryCardId == request.LibraryCardId && b.Status == BorrowingStatus.Borrowed);
-            if (hasActiveBorrowings)
-                throw new Utils.ApiException(400, "Bạn đang có sách chưa trả. Vui lòng trả sách trước khi mượn tiếp.");
+            // Get settings from DB
+            var maxBooksPerUser = await _settingsService.GetIntValueAsync("MaxBooksPerUser", 3);
+            var maxBorrowDays = await _settingsService.GetIntValueAsync("MaxBorrowDays", 15);
 
-            // Check maximum 3 books per borrow session (đếm số MÃ SÁCH khác nhau, không phải số BookItem)
+            // Check maximum books currently borrowed (đếm số MÃ SÁCH khác nhau, không phải số BookItem)
             var currentBorrowedBookIds = await _db.Borrowings
                 .Where(b => b.LibraryCardId == request.LibraryCardId && b.Status == BorrowingStatus.Borrowed)
                 .Include(b => b.BookItem)
                 .Select(b => b.BookItem.BookId)
                 .Distinct()
-                .CountAsync();
+                .ToListAsync();
             
-            if (currentBorrowedBookIds >= 3)
-                throw new Utils.ApiException(400, "Bạn đã mượn tối đa 3 mã sách. Vui lòng trả sách trước khi mượn tiếp.");
+            if (currentBorrowedBookIds.Count >= maxBooksPerUser)
+                throw new Utils.ApiException(400, $"Bạn đã mượn tối đa {maxBooksPerUser} mã sách. Vui lòng trả bớt sách trước khi mượn thêm.");
+            
+            // Check if trying to borrow the same book title again
+            var requestedBookId = item.BookId;
+            if (currentBorrowedBookIds.Contains(requestedBookId))
+                throw new Utils.ApiException(400, "Bạn đã mượn cuốn sách này rồi. Không thể mượn cùng mã sách nhiều lần.");
 
-            var days = request.Days ?? 15;
-            if (days > 15)
-                throw new Utils.ApiException(400, "Thời hạn mượn tối đa là 15 ngày");
+            var days = request.Days ?? maxBorrowDays;
+            if (days > maxBorrowDays)
+                throw new Utils.ApiException(400, $"Thời hạn mượn tối đa là {maxBorrowDays} ngày");
 
             var now = DateTime.UtcNow;
             var borrow = new Borrowing
@@ -103,7 +108,7 @@ namespace LibraryManagement.API.Services
             // Send notification
             if (item.Book != null)
             {
-                await _notificationService.NotifyReturnSuccessAsync(borrowing.LibraryCardId, item.Book.Title);
+                await _notificationService.NotifyReturnSuccessAsync(borrowing.LibraryCardId, borrowing.Id, item.Book.Title);
             }
             
             return borrowing;
@@ -117,7 +122,33 @@ namespace LibraryManagement.API.Services
             if (borrowing.Status != BorrowingStatus.Borrowed)
                 throw new Utils.ApiException(400, "Chỉ gia hạn khi đang mượn");
 
+            // Get settings from DB
+            var maxRenewCount = await _settingsService.GetIntValueAsync("MaxRenewCount", 1);
+            var renewExtensionDays = await _settingsService.GetIntValueAsync("RenewExtensionDays", 7);
+            var maxTotalBorrowDays = await _settingsService.GetIntValueAsync("MaxTotalBorrowDays", 22);
+
+            // Không cho gia hạn nếu đã quá hạn
+            if (borrowing.DueDate < DateTime.UtcNow)
+                throw new Utils.ApiException(400, "Không thể gia hạn sách đã quá hạn. Vui lòng trả sách!");
+
+            // Chỉ cho gia hạn theo số lần quy định
+            if (borrowing.RenewCount >= maxRenewCount)
+                throw new Utils.ApiException(400, $"Bạn đã gia hạn rồi. Mỗi phiếu mượn chỉ được gia hạn {maxRenewCount} lần!");
+
+            // Validate số ngày gia hạn
+            if (request.ExtendDays > renewExtensionDays)
+                throw new Utils.ApiException(400, $"Mỗi lần gia hạn tối đa {renewExtensionDays} ngày");
+
+            // Tính tổng số ngày từ ngày mượn đến ngày hết hạn mới
+            var totalDays = (borrowing.DueDate.AddDays(request.ExtendDays) - borrowing.BorrowDate).TotalDays;
+            
+            // Giới hạn tổng thời gian mượn
+            if (totalDays > maxTotalBorrowDays)
+                throw new Utils.ApiException(400, $"Tổng thời gian mượn không được vượt quá {maxTotalBorrowDays} ngày. Bạn chỉ có thể gia hạn thêm " + 
+                    Math.Max(0, (int)(maxTotalBorrowDays - (borrowing.DueDate - borrowing.BorrowDate).TotalDays)) + " ngày nữa.");
+
             borrowing.DueDate = borrowing.DueDate.AddDays(request.ExtendDays);
+            borrowing.RenewCount += 1;
             await _repo.SaveChangesAsync();
             
             // Send notification
@@ -161,6 +192,7 @@ namespace LibraryManagement.API.Services
                         .ThenInclude(b => b.BookAuthors)
                             .ThenInclude(ba => ba.Author)
                 .Include(b => b.LibraryCard)
+                    .ThenInclude(lc => lc.User)
                 .AsQueryable();
 
             // Filter by status
@@ -177,7 +209,10 @@ namespace LibraryManagement.API.Services
                 }
                 else if (status.ToLower() == "returned")
                 {
-                    query = query.Where(b => b.Status == BorrowingStatus.Returned);
+                    // Include Returned, Lost, and Damaged in history
+                    query = query.Where(b => b.Status == BorrowingStatus.Returned || 
+                                            b.Status == BorrowingStatus.Lost || 
+                                            b.Status == BorrowingStatus.Damaged);
                 }
             }
 
@@ -201,8 +236,10 @@ namespace LibraryManagement.API.Services
             var totalActive = await _db.Borrowings.CountAsync(b => b.Status == BorrowingStatus.Borrowed && b.DueDate >= DateTime.UtcNow);
             // Quá hạn
             var totalOverdue = await _db.Borrowings.CountAsync(b => b.Status == BorrowingStatus.Borrowed && b.DueDate < DateTime.UtcNow);
-            // Đã trả
-            var totalReturned = await _db.Borrowings.CountAsync(b => b.Status == BorrowingStatus.Returned);
+            // Đã trả (bao gồm Returned, Lost, Damaged)
+            var totalReturned = await _db.Borrowings.CountAsync(b => b.Status == BorrowingStatus.Returned || 
+                                                                     b.Status == BorrowingStatus.Lost || 
+                                                                     b.Status == BorrowingStatus.Damaged);
             // Tổng số
             var totalBorrowings = await _db.Borrowings.CountAsync();
 
@@ -273,7 +310,111 @@ namespace LibraryManagement.API.Services
             // Send notification
             if (item.Book != null)
             {
-                await _notificationService.NotifyReturnSuccessAsync(borrowing.LibraryCardId, item.Book.Title);
+                await _notificationService.NotifyReturnSuccessAsync(borrowing.LibraryCardId, borrowing.Id, item.Book.Title);
+            }
+
+            return (await GetByIdAsync(id))!;
+        }
+
+        public async Task<BorrowingViewDto> ReportLostAsync(int id)
+        {
+            var borrowing = await _db.Borrowings
+                .Include(b => b.LibraryCard)
+                .Include(b => b.BookItem)
+                    .ThenInclude(bi => bi.Book)
+                .FirstOrDefaultAsync(b => b.Id == id) ??
+                throw new Utils.ApiException(404, "Phiếu mượn không tồn tại");
+
+            if (borrowing.Status != BorrowingStatus.Borrowed)
+                throw new Utils.ApiException(400, "Phiếu mượn không ở trạng thái đang mượn");
+
+            // Update borrowing status
+            borrowing.Status = BorrowingStatus.Lost;
+            borrowing.ReturnDate = DateTime.UtcNow;
+
+            // Update book item status to Lost
+            borrowing.BookItem.Status = BookItemStatus.Lost;
+
+            // Deactivate library card - user must compensate
+            borrowing.LibraryCard.Status = CardStatus.Inactive;
+
+            // Get fine amount from settings
+            var lostBookFine = await _settingsService.GetDecimalValueAsync("LostBookFine", 100000);
+
+            // Create fine record
+            var fine = new Fine
+            {
+                BorrowingId = borrowing.Id,
+                Amount = lostBookFine,
+                Reason = "Lost",
+                IsPaid = false,
+                CreatedAt = DateTime.UtcNow
+            };
+            _db.Fines.Add(fine);
+
+            await _db.SaveChangesAsync();
+
+            // Send notification
+            if (borrowing.BookItem.Book != null)
+            {
+                await _notificationService.CreateNotificationAsync(new CreateNotificationDto
+                {
+                    LibraryCardId = borrowing.LibraryCardId,
+                    Message = $"Sách '{borrowing.BookItem.Book.Title}' đã được báo mất. Thẻ thư viện tạm thời bị vô hiệu hóa. Vui lòng liên hệ thư viện để bồi thường.",
+                    Type = "BookLost"
+                });
+            }
+
+            return (await GetByIdAsync(id))!;
+        }
+
+        public async Task<BorrowingViewDto> ReportDamagedAsync(int id)
+        {
+            var borrowing = await _db.Borrowings
+                .Include(b => b.LibraryCard)
+                .Include(b => b.BookItem)
+                    .ThenInclude(bi => bi.Book)
+                .FirstOrDefaultAsync(b => b.Id == id) ??
+                throw new Utils.ApiException(404, "Phiếu mượn không tồn tại");
+
+            if (borrowing.Status != BorrowingStatus.Borrowed)
+                throw new Utils.ApiException(400, "Phiếu mượn không ở trạng thái đang mượn");
+
+            // Update borrowing status
+            borrowing.Status = BorrowingStatus.Damaged;
+            borrowing.ReturnDate = DateTime.UtcNow;
+
+            // Update book item status to Damaged
+            borrowing.BookItem.Status = BookItemStatus.Damaged;
+
+            // Deactivate library card - user must compensate
+            borrowing.LibraryCard.Status = CardStatus.Inactive;
+
+            // Get fine amount from settings
+            var damagedBookFine = await _settingsService.GetDecimalValueAsync("DamagedBookFine", 50000);
+
+            // Create fine record
+            var fine = new Fine
+            {
+                BorrowingId = borrowing.Id,
+                Amount = damagedBookFine,
+                Reason = "Damaged",
+                IsPaid = false,
+                CreatedAt = DateTime.UtcNow
+            };
+            _db.Fines.Add(fine);
+
+            await _db.SaveChangesAsync();
+
+            // Send notification
+            if (borrowing.BookItem.Book != null)
+            {
+                await _notificationService.CreateNotificationAsync(new CreateNotificationDto
+                {
+                    LibraryCardId = borrowing.LibraryCardId,
+                    Message = $"Sách '{borrowing.BookItem.Book.Title}' đã được báo hỏng. Thẻ thư viện tạm thời bị vô hiệu hóa. Vui lòng liên hệ thư viện để bồi thường.",
+                    Type = "BookDamaged"
+                });
             }
 
             return (await GetByIdAsync(id))!;
@@ -290,6 +431,7 @@ namespace LibraryManagement.API.Services
                 DueDate = b.DueDate,
                 ReturnDate = b.ReturnDate,
                 Status = (int)b.Status,
+                RenewCount = b.RenewCount,
                 BookItem = b.BookItem == null ? null : new BookItemViewDto
                 {
                     Id = b.BookItem.Id,

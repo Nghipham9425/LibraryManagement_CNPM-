@@ -12,6 +12,7 @@ namespace LibraryManagement.API.DTOs
         public DateTime DueDate { get; set; }
         public DateTime? ReturnDate { get; set; }
         public int Status { get; set; }
+        public int RenewCount { get; set; }
         
         // User information (for admin)
         public string? UserName { get; set; }

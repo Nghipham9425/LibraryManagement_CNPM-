@@ -15,12 +15,14 @@ namespace LibraryManagement.API.Controllers
         private readonly AuthService _authServices;
         private readonly IValidator<RegisterRequest> _registerValidator;
         private readonly IValidator<LoginRequest> _loginValidator;
+        private readonly ActivityLogService _activityLogService;
 
-        public AuthController(AuthService authService, IValidator<RegisterRequest> registerValidator, IValidator<LoginRequest> loginValidator)
+        public AuthController(AuthService authService, IValidator<RegisterRequest> registerValidator, IValidator<LoginRequest> loginValidator, ActivityLogService activityLogService)
         {
             _authServices = authService;
             _registerValidator = registerValidator;
             _loginValidator = loginValidator;
+            _activityLogService = activityLogService;
         }
 
         [HttpPost("register")]
@@ -30,6 +32,10 @@ namespace LibraryManagement.API.Controllers
             if (!validateRS.IsValid)
                 throw new ApiException(400, string.Join(", ", validateRS.Errors.Select(e => e.ErrorMessage)));
             await _authServices.Register(request.Username, request.Email, request.Password, request.Role);
+            
+            // Log activity (no userId yet since just registered)
+            await _activityLogService.LogAsync("Register", "Auth", null, $"Người dùng '{request.Username}' đã đăng ký tài khoản");
+            
             return Ok("Registered");
         }
 
@@ -44,6 +50,9 @@ namespace LibraryManagement.API.Controllers
             if (user == null) throw new ApiException(500, "User not found after login");
             var refreshToken = await _authServices.GenerateRefreshToken(user.Id);
             
+            // Get user's library card ID
+            var libraryCard = await _authServices.GetLibraryCardByUserIdAsync(user.Id);
+            
             // Set JWT token as HttpOnly cookie
             Response.Cookies.Append("accessToken", token, new CookieOptions
             {
@@ -53,7 +62,7 @@ namespace LibraryManagement.API.Controllers
                 Expires = DateTimeOffset.UtcNow.AddDays(7)
             });
             
-            return Ok(new { user = new { user.Id, user.UserName, user.Email, user.Role }, refreshToken, message = "Login successful" });
+            return Ok(new { user = new { user.Id, user.UserName, user.Email, user.Role, LibraryCardId = libraryCard?.Id }, refreshToken, message = "Login successful" });
         }
 
         [HttpPost("logout")]
@@ -77,7 +86,9 @@ namespace LibraryManagement.API.Controllers
             var user = await _authServices.GetUserByIdAsync(int.Parse(userIdClaim));
             if (user == null) return NotFound();
 
-            return Ok(new { user.Id, user.UserName, user.Email, user.Role });
+            var libraryCard = await _authServices.GetLibraryCardByUserIdAsync(user.Id);
+
+            return Ok(new { user.Id, user.UserName, user.Email, user.Role, LibraryCardId = libraryCard?.Id });
         }
 
         [HttpPost("refresh")]

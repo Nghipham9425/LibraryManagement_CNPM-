@@ -55,6 +55,9 @@ builder.Services.AddScoped<UserRepository>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<LibraryCardRepository>();
 builder.Services.AddScoped<LibraryCardService>();
+builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<SettingsService>();
+builder.Services.AddScoped<ActivityLogService>();
 
 builder.Services.AddValidatorsFromAssemblyContaining<BookValidator>();
 builder.Services.AddValidatorsFromAssemblyContaining<CreateUserDtoValidator>();
