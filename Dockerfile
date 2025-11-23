@@ -22,5 +22,8 @@ COPY --from=publish /app/publish .
 # Expose port 80
 EXPOSE 80
 
+# Set ASP.NET Core to listen on port 80
+ENV ASPNETCORE_URLS=http://+:80
+
 # Set the entry point
 ENTRYPOINT ["dotnet", "LibraryManagement.API.dll"]
