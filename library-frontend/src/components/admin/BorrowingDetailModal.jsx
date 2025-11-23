@@ -1,7 +1,7 @@
 import { Modal, Button, Row, Col, Badge, Image } from 'react-bootstrap';
 import { FaUser, FaBook, FaCalendarAlt, FaUndo } from 'react-icons/fa';
 
-const BorrowingDetailModal = ({ show, onHide, borrowing, onExtend, onReturn, onRefresh }) => {
+const BorrowingDetailModal = ({ show, onHide, borrowing, onReturn, onRefresh }) => {
   if (!borrowing) return null;
 
   const getStatusBadge = (status) => {
@@ -111,35 +111,19 @@ const BorrowingDetailModal = ({ show, onHide, borrowing, onExtend, onReturn, onR
       </Modal.Body>
       <Modal.Footer>
         {borrowing.status === 0 && (
-          <>
-            <Button
-              variant="warning"
-              onClick={() => {
-                const days = prompt('Nhập số ngày gia hạn:', '7');
-                if (days) {
-                  onExtend(borrowing.id, parseInt(days));
-                  onRefresh();
-                  onHide();
-                }
-              }}
-            >
-              <FaCalendarAlt className="me-2" />
-              Gia hạn
-            </Button>
-            <Button
-              variant="success"
-              onClick={() => {
-                if (confirm('Xác nhận trả sách cho phiếu mượn này?')) {
-                  onReturn(borrowing.id);
-                  onRefresh();
-                  onHide();
-                }
-              }}
-            >
-              <FaUndo className="me-2" />
-              Trả sách
-            </Button>
-          </>
+          <Button
+            variant="success"
+            onClick={() => {
+              if (confirm('Xác nhận trả sách cho phiếu mượn này?')) {
+                onReturn(borrowing.id);
+                onRefresh();
+                onHide();
+              }
+            }}
+          >
+            <FaUndo className="me-2" />
+            Trả sách
+          </Button>
         )}
         <Button variant="secondary" onClick={onHide}>
           Đóng

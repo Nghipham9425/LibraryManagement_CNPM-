@@ -51,17 +51,6 @@ const BorrowingManagement = () => {
     fetchBorrowings();
   }, [fetchBorrowings]);
 
-  const handleExtend = async (id, days) => {
-    try {
-      await axios.post(`http://localhost:5000/api/borrowings/${id}/extend`, days);
-      fetchBorrowings();
-      fetchStats();
-      alert('Gia hạn thành công!');
-    } catch (err) {
-      alert('Lỗi khi gia hạn: ' + (err.response?.data?.message || err.message));
-    }
-  };
-
   const handleReturn = async (id) => {
     if (!confirm('Xác nhận trả sách cho phiếu mượn này?')) return;
     try {
@@ -206,29 +195,6 @@ const BorrowingManagement = () => {
                                 onClick={() => handleViewDetail(b.id)}
                               >
                                 <FaEye /> Chi tiết
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="warning"
-                                onClick={() => {
-                                  if (b.renewCount >= 1) {
-                                    alert('Phiếu mượn này đã được gia hạn rồi (tối đa 1 lần)');
-                                    return;
-                                  }
-                                  const days = prompt('Nhập số ngày gia hạn (tối đa 7 ngày):', '7');
-                                  if (days) {
-                                    const numDays = parseInt(days);
-                                    if (numDays > 7) {
-                                      alert('Chỉ được gia hạn tối đa 7 ngày!');
-                                      return;
-                                    }
-                                    handleExtend(b.id, numDays);
-                                  }
-                                }}
-                                disabled={b.renewCount >= 1}
-                                title={b.renewCount >= 1 ? 'Đã gia hạn rồi' : 'Gia hạn thêm tối đa 7 ngày'}
-                              >
-                                <FaCalendarAlt /> Gia hạn {b.renewCount >= 1 && '✓'}
                               </Button>
                               <Button
                                 size="sm"
@@ -390,7 +356,6 @@ const BorrowingManagement = () => {
             setSelectedBorrowing(null);
           }}
           borrowing={selectedBorrowing}
-          onExtend={handleExtend}
           onReturn={handleReturn}
           onRefresh={() => {
             fetchBorrowings();

@@ -45,7 +45,7 @@ const Footer = () => (
           <ul className="list-unstyled">
             <li className="mb-2">
               <a
-                href="#"
+                href="/"
                 className="text-white text-decoration-none"
               >
                 Trang chủ
@@ -53,26 +53,26 @@ const Footer = () => (
             </li>
             <li className="mb-2">
               <a
-                href="#"
+                href="/books"
                 className="text-white text-decoration-none"
               >
-                Thể loại sách
+                Danh sách sách
               </a>
             </li>
             <li className="mb-2">
               <a
-                href="#"
+                href="/genres"
                 className="text-white text-decoration-none"
               >
-                Tác giả nổi bật
+                Thể loại
               </a>
             </li>
             <li className="mb-2">
               <a
-                href="#"
+                href="/authors"
                 className="text-white text-decoration-none"
               >
-                Giới thiệu thư viện
+                Tác giả
               </a>
             </li>
           </ul>
@@ -82,7 +82,7 @@ const Footer = () => (
           <ul className="list-unstyled">
             <li className="mb-2">
               <a
-                href="#"
+                href="/library-info"
                 className="text-white text-decoration-none"
               >
                 Hướng dẫn sử dụng
@@ -90,7 +90,7 @@ const Footer = () => (
             </li>
             <li className="mb-2">
               <a
-                href="#"
+                href="/policy"
                 className="text-white text-decoration-none"
               >
                 Quy định mượn trả
@@ -98,7 +98,7 @@ const Footer = () => (
             </li>
             <li className="mb-2">
               <a
-                href="#"
+                href="/faq"
                 className="text-white text-decoration-none"
               >
                 Câu hỏi thường gặp
@@ -106,7 +106,7 @@ const Footer = () => (
             </li>
             <li className="mb-2">
               <a
-                href="#"
+                href="/contact"
                 className="text-white text-decoration-none"
               >
                 Liên hệ hỗ trợ
@@ -118,13 +118,13 @@ const Footer = () => (
           <h5 className="text-uppercase mb-4">Liên hệ</h5>
           <ul className="list-unstyled">
             <li>
-              <FaMapMarkerAlt className="me-2" /> Huflit HM
+              <FaMapMarkerAlt className="me-2" /> Huflit Hóc Môn
             </li>
             <li>
-              <FaPhone className="me-2" /> 0123 456 789
+              <FaPhone className="me-2" /> (028) 3962 426
             </li>
             <li>
-              <FaEnvelope className="me-2" /> info@HF.com
+              <FaEnvelope className="me-2" /> library@huflit.edu.vn
             </li>
           </ul>
         </Col>
