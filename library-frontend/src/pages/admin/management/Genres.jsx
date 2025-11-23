@@ -3,8 +3,10 @@ import { Card, Button, Container, Table, Modal, Form, Alert, Spinner, Badge } fr
 import { FaTags, FaPlus, FaEdit, FaTrash } from "react-icons/fa"
 import { genreAPI } from "../../../apis"
 import { toast } from 'react-toastify'
+import { useAuth } from "../../../contexts/AuthContext"
 
 const Genres = () => {
+  const { user } = useAuth()
   const [genres, setGenres] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -113,7 +115,10 @@ const Genres = () => {
                     <td><Badge bg="secondary">{genre.bookCount || 0} sách</Badge></td>
                     <td>
                       <Button variant="outline-primary" size="sm" className="me-2" onClick={() => handleShowModal(genre)}><FaEdit /></Button>
-                      <Button variant="outline-danger" size="sm" onClick={() => handleDelete(genre.id)}><FaTrash /></Button>
+                      {/* Chỉ Admin mới có quyền xóa thể loại */}
+                      {user?.role === 'Admin' && (
+                        <Button variant="outline-danger" size="sm" onClick={() => handleDelete(genre.id)}><FaTrash /></Button>
+                      )}
                     </td>
                   </tr>
                 ))}

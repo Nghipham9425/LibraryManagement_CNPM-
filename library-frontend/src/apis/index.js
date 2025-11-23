@@ -226,3 +226,41 @@ export const reportAPI = {
   },
 }
 
+export const settingsAPI = {
+  getAll: async () => {
+    const response = await api.get('/settings')
+    return response.data
+  },
+  getByKey: async (key) => {
+    const response = await api.get(`/settings/${key}`)
+    return response.data
+  },
+  update: async (key, value) => {
+    const response = await api.put(`/settings/${key}`, { value })
+    return response.data
+  },
+}
+
+export const activityLogsAPI = {
+  // Get all logs with filters
+  getAll: async (params = {}) => {
+    const response = await api.get('/activitylogs', { params })
+    return response.data
+  },
+  // Get recent logs
+  getRecent: async (count = 10) => {
+    const response = await api.get(`/activitylogs/recent?count=${count}`)
+    return response.data
+  },
+  // Get logs by user
+  getByUser: async (userId, limit = 50) => {
+    const response = await api.get(`/activitylogs/user/${userId}?limit=${limit}`)
+    return response.data
+  },
+  // Get statistics
+  getStats: async () => {
+    const response = await api.get('/activitylogs/stats')
+    return response.data
+  },
+}
+

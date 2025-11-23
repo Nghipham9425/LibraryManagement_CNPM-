@@ -19,6 +19,8 @@ import UserBooks from "./pages/user/Books/Books"
 import UserAuthors from "./pages/user/Authors/Authors"
 import UserGenres from "./pages/user/Genres/Genres"
 import Contact from "./pages/user/Contact/Contact"
+import FAQ from "./pages/user/FAQ/FAQ"
+import Policy from "./pages/user/Policy/Policy"
 import BookDetails from "./pages/user/BookDetails/BookDetails"
 import LibraryInfo from "./pages/user/LibraryInfo/LibraryInfo"
 import Library3D from "./pages/user/Library3D/Library3D"
@@ -27,6 +29,8 @@ import Profile from "./pages/user/Profile/Profile"
 import MyLibraryCard from "./pages/user/MyLibraryCard/MyLibraryCard"
 import LibraryCards from "./components/admin/LibraryCards/LibraryCards"
 import Reports from "./pages/admin/management/Reports"
+import Settings from "./pages/admin/management/Settings"
+import ActivityLogs from "./pages/admin/management/ActivityLogs"
 import "react-toastify/dist/ReactToastify.css"
 import "./App.css"
 
@@ -58,6 +62,8 @@ function App() {
               </UserProtectedRoute>
             } />
             <Route path="contact" element={<Contact />} />
+            <Route path="faq" element={<FAQ />} />
+            <Route path="policy" element={<Policy />} />
             <Route path="library-info" element={<LibraryInfo />} />
           </Route>
           <Route path="/library-3d" element={<Library3D />} />
@@ -75,6 +81,8 @@ function App() {
             <Route path="members" element={<Members />} />
             <Route path="library-cards" element={<LibraryCards />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="settings" element={<Settings />} />
+            <Route path="activity-logs" element={<ActivityLogs />} />
           </Route>
         </Routes>
         <ToastContainer

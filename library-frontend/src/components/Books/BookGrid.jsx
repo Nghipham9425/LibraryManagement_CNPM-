@@ -56,13 +56,16 @@ const BookGrid = ({ books, onEdit, onDelete, onViewDetails, onManageItems, showA
                           Quản lý bản sao
                         </Dropdown.Item>
                       )}
-                      <Dropdown.Item
-                        onClick={() => onDelete(book.id)}
-                        className="book-card-dropdown-item text-danger"
-                      >
-                        <FaTrash className="me-2" />
-                        Xóa
-                      </Dropdown.Item>
+                      {/* Chỉ Admin mới có quyền xóa sách */}
+                      {user?.role === 'Admin' && (
+                        <Dropdown.Item
+                          onClick={() => onDelete(book.id)}
+                          className="book-card-dropdown-item text-danger"
+                        >
+                          <FaTrash className="me-2" />
+                          Xóa
+                        </Dropdown.Item>
+                      )}
                     </Dropdown.Menu>
                   </Dropdown>
                 )}

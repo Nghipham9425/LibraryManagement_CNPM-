@@ -13,8 +13,10 @@ import {
 import { FaUsers, FaPlus, FaEdit, FaTrash } from "react-icons/fa"
 import { authorAPI } from "../../../apis"
 import { toast } from 'react-toastify'
+import { useAuth } from "../../../contexts/AuthContext"
 
 const Authors = () => {
+  const { user } = useAuth()
   const [authors, setAuthors] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -186,13 +188,16 @@ const Authors = () => {
                       >
                         <FaEdit />
                       </Button>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => handleDelete(author.id)}
-                      >
-                        <FaTrash />
-                      </Button>
+                      {/* Chỉ Admin mới có quyền xóa tác giả */}
+                      {user?.role === 'Admin' && (
+                        <Button
+                          variant="outline-danger"
+                          size="sm"
+                          onClick={() => handleDelete(author.id)}
+                        >
+                          <FaTrash />
+                        </Button>
+                      )}
                     </td>
                   </tr>
                 ))}

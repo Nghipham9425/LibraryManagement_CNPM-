@@ -9,7 +9,7 @@ const AdminProtectedRoute = ({ children }) => {
     return <div>Loading...</div>;
   }
 
-  if (!user || user.role !== 'Admin') {
+  if (!user || (user.role !== 'Admin' && user.role !== 'Librarian')) {
     return <Navigate to="/admin/auth" replace />;
   }
 

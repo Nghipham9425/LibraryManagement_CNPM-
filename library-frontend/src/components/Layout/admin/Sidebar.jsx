@@ -1,20 +1,30 @@
 import { Nav } from "react-bootstrap"
 import { NavLink, useLocation } from "react-router-dom"
-import { FaHome, FaBook, FaUsers, FaExchangeAlt, FaTags, FaIdCard, FaChartBar } from "react-icons/fa"
+import { FaHome, FaBook, FaUsers, FaExchangeAlt, FaTags, FaIdCard, FaChartBar, FaCog, FaHistory } from "react-icons/fa"
+import { useAuth } from "@/contexts/AuthContext"
 
 const Sidebar = () => {
   const location = useLocation()
+  const { user } = useAuth()
 
-  const menuItems = [
-    { path: "/admin", label: "Tổng quan", icon: FaHome },
-    { path: "/admin/books", label: "Sách", icon: FaBook },
-    { path: "/admin/authors", label: "Tác giả", icon: FaUsers },
-    { path: "/admin/genres", label: "Thể loại", icon: FaTags },
-    { path: "/admin/borrowing", label: "Mượn trả", icon: FaExchangeAlt },
-    { path: "/admin/members", label: "Thành viên", icon: FaUsers },
-    { path: "/admin/library-cards", label: "Thẻ thư viện", icon: FaIdCard },
-    { path: "/admin/reports", label: "Báo cáo", icon: FaChartBar },
+  // Define all menu items with role permissions
+  const allMenuItems = [
+    { path: "/admin", label: "Tổng quan", icon: FaHome, roles: ["Admin"] },
+    { path: "/admin/books", label: "Sách", icon: FaBook, roles: ["Admin", "Librarian"] },
+    { path: "/admin/authors", label: "Tác giả", icon: FaUsers, roles: ["Admin", "Librarian"] },
+    { path: "/admin/genres", label: "Thể loại", icon: FaTags, roles: ["Admin", "Librarian"] },
+    { path: "/admin/borrowing", label: "Mượn trả", icon: FaExchangeAlt, roles: ["Admin", "Librarian"] },
+    { path: "/admin/members", label: "Thành viên", icon: FaUsers, roles: ["Admin"] },
+    { path: "/admin/library-cards", label: "Thẻ thư viện", icon: FaIdCard, roles: ["Admin", "Librarian"] },
+    { path: "/admin/reports", label: "Báo cáo", icon: FaChartBar, roles: ["Admin", "Librarian"] },
+    { path: "/admin/activity-logs", label: "Nhật ký", icon: FaHistory, roles: ["Admin"] },
+    { path: "/admin/settings", label: "Cài đặt", icon: FaCog, roles: ["Admin"] },
   ]
+
+  // Filter menu items based on user role
+  const menuItems = allMenuItems.filter(item => 
+    item.roles.includes(user?.role)
+  )
 
   const isActive = (path) => {
     if (path === "/admin") {
@@ -77,7 +87,7 @@ const Sidebar = () => {
                 textOverflow: "ellipsis",
               }}
             >
-              Ngh
+              {user?.userName || "User"}
             </div>
             <div
               style={{
@@ -85,7 +95,7 @@ const Sidebar = () => {
                 color: "#6b7280",
               }}
             >
-              Librarian
+              {user?.role || "Unknown"}
             </div>
           </div>
         </div>
